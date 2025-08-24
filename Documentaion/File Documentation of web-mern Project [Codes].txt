@@ -1,0 +1,2938 @@
+PROJECT : WEB-MERN [using ->REACT, MONGODB, NODEJS, EXPRESS---javascript]
+
+STRUCTURE:
+
+mern-library/
+├── Backend/
+|||                       server------>Folder
+│   ├──config/
+│   │   ├── db.js
+|    |
+│   ├── controllers/
+│   │   ├── adminController.js
+│   │   ├── authController.js
+│   │   └── userController.js
+│   │   └── bookController.js
+│   ├── middleware/
+|    |
+│   │   └── authMiddleware.js
+│   │   └── adminMiddleware.js
+│   │  
+│   ├── models/
+|    |
+│   │   ├── Admin.js
+│   │   ├── Auth.js
+│   │   ├── Book.js
+│   │   └── User.js
+│   ├── routes/
+|    |
+│   │   ├── adminRoutes.js
+│   │   ├── authRoutes.js
+│   │   └── userRoutes.js
+│   │   ├── userbooks.js
+|    |
+│   ├──Seed /
+│   │   ├──seedBook.js
+│   │   ├──seedAdmin.js
+│   │   
+│   │   ├──utils/
+│   │   ├──generateTokens.js
+│   │   
+│   ├── .env
+│   ├── server.js
+│   └── package.json
+│
+
+||||                            client -------> Folder
+├── Frontend/
+│   ├── public/
+│   │   └── index.html
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Navbar.jsx
+│   
+│   │   ├── pages/
+│   │   │   ├──Home.jsx
+│   │   │   ├── Login.jsx
+│   │   │   ├── Register.jsx
+│   │   │   ├── AdminLogin.jsx
+│   │   │   ├── AdminDashboard.jsx
+│   │   │   ├── BookList.jsx
+│   │   │   └── User.jsx
+│   │    
+│   │   ├── App.js
+│   │   ├── index.js
+│   │   └── styles.css/
+
+│   └── package.json
+│
+└── README.md
+-----------------------o----------------------------------o-----------------------o------------------o---------------------------------o------------------------------------o----------------------o---------------------o----------------------o----------------o
+                                                                                                                           
+                                                                                                                                FRONTEND-----CODES
+Navbar.jsx :--->
+import React from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+
+const Navbar = () => {
+  const token = localStorage.getItem('token');
+  const adminToken = localStorage.getItem('adminToken');
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.clear();
+    alert('Logged out');
+    navigate('/login');
+  };
+
+  return (
+    <nav className="navbar">
+      <div className="navbar-title">
+        <h2>📚 Library System</h2>
+      </div>
+      <div className="nav-links">
+        <Link to="/">🏠 Home</Link>
+        <Link to="/booklist">📖 Books</Link>
+
+        {adminToken ? (
+          <>
+            <Link to="/admin-dashboard">🛠 Admin</Link>
+            <button onClick={handleLogout}>🚪 Logout</button>
+          </>
+        ) : token ? (
+          <>
+            <Link to="/user">👤 Profile</Link>
+            <button onClick={handleLogout}>🚪 Logout</button>
+          </>
+        ) : (
+          <>
+            <Link to="/login">🔐 Login</Link>
+            <Link to="/register">📝 Register</Link>
+            <Link to="/admin-login">🛠 Admin Login</Link>
+          </>
+        )}
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;
+---------------------------------------
+
+Home.jsx :--->
+import React from 'react';
+
+const books = {
+  Horror: [
+    {
+      title: "The Haunting of Hill House",
+      author: "Shirley Jackson",
+      image: "https://covers.openlibrary.org/b/id/8162601-L.jpg",
+    },
+    {
+      title: "Pet Sematary",
+      author: "Stephen King",
+      image: "https://covers.openlibrary.org/b/id/8231654-L.jpg",
+    },
+    {
+      title: "The Silent Patient",
+      author: "Alex Michaelides",
+      image: "https://covers.openlibrary.org/b/id/10543729-L.jpg",
+    },
+  ],
+  Comedy: [
+    {
+      title: "Yes Please",
+      author: "Amy Poehler",
+      image: "https://covers.openlibrary.org/b/id/8231601-L.jpg",
+    },
+    {
+      title: "Me Talk Pretty One Day",
+      author: "David Sedaris",
+      image: "https://covers.openlibrary.org/b/id/8231923-L.jpg",
+    },
+    {
+      title: "Is Everyone Hanging Out Without Me?",
+      author: "Mindy Kaling",
+      image: "https://covers.openlibrary.org/b/id/10543820-L.jpg",
+    },
+  ],
+  Fiction: [
+    {
+      title: "To Kill a Mockingbird",
+      author: "Harper Lee",
+      image: "https://covers.openlibrary.org/b/id/8226091-L.jpg",
+    },
+    {
+      title: "The Book Thief",
+      author: "Markus Zusak",
+      image: "https://covers.openlibrary.org/b/id/8231627-L.jpg",
+    },
+    {
+      title: "The Night Circus",
+      author: "Erin Morgenstern",
+      image: "https://covers.openlibrary.org/b/id/8231642-L.jpg",
+    },
+  ],
+};
+
+const Home = () => {
+  return (
+    <div className="home-container" style={{ background: "linear-gradient(to bottom right, #f0f7ff, #e4f4ea)" }}>
+      <h2 style={{ fontSize: '2.8rem', color: '#1abc9c', letterSpacing: '1.5px' }}>
+        🌲 Welcome to <span style={{ color: '#34495e' }}>Fable Forest</span>
+      </h2>
+      <p style={{ fontSize: '1.3rem', color: '#555', maxWidth: '720px', margin: 'auto', marginBottom: '40px' }}>
+        Explore genres, discover hidden gems, and lose yourself in a forest of timeless stories. ✨
+      </p>
+
+      {Object.entries(books).map(([genre, bookList]) => (
+        <section className="genre-section" key={genre}>
+          <h2 className="genre-title">{genre} 📚</h2>
+          <div className="books-horizontal-scroll">
+            {bookList.map((book, index) => (
+              <div className="book-card" key={index}>
+                <img
+                  className="book-image"
+                  src={book.image}
+                  alt={book.title}
+                  loading="lazy"
+                />
+                <h4>{book.title}</h4>
+                <p>{book.author}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      ))}
+
+      <footer className="footer">
+        <div className="footer-content">
+          <p>📬 Connect with us:</p>
+          <div className="footer-icons">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+              <img src="https://cdn-icons-png.flaticon.com/512/145/145802.png" alt="Facebook" className="footer-icon-img" />
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+              <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" className="footer-icon-img" />
+            </a>
+            <a href="https://x.com" target="_blank" rel="noopener noreferrer" aria-label="X Twitter">
+              <img src="https://cdn-icons-png.flaticon.com/512/5968/5968830.png" alt="X Twitter" className="footer-icon-img" />
+            </a>
+          </div>
+        </div>
+        <div className="footer-bottom">
+          <small>© {new Date().getFullYear()} Fable Forest Library. All rights reserved.</small>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default Home;
+-----------------------------------------
+
+User.jsx :---->
+// Frontend/components/User.jsx
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+
+const User = () => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Replace with your backend URL if frontend runs on a different port
+  const BACKEND_URL = 'http://localhost:5000';
+
+  const fetchProfile = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('No token found. Please login.');
+        window.location.href = '/login';
+        return;
+      }
+
+      const res = await axios.get(`${BACKEND_URL}/api/user/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setUser(res.data);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching user profile:', err.response?.data || err.message);
+      alert('Session expired or unauthorized. Please login again.');
+      localStorage.removeItem('token');
+      window.location.href = '/login';
+    }
+  };
+
+  const handleRemoveBook = async (bookId) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`${BACKEND_URL}/api/user/books/${bookId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchProfile();
+    } catch (err) {
+      console.error('Error removing book:', err.response?.data || err.message);
+      alert('Failed to remove book.');
+    }
+  };
+
+  const handleReadBook = async (bookId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`${BACKEND_URL}/api/read/${bookId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.data.pdfUrl) {
+        // Prepend backend URL to relative PDF path
+        const fullPdfUrl = `${BACKEND_URL}${res.data.pdfUrl}`;
+        // Open PDF in new tab
+        window.open(fullPdfUrl, '_blank');
+      } else {
+        alert('PDF not available for this book.');
+      }
+    } catch (err) {
+      console.error('Error reading book:', err.response?.data || err.message);
+      alert(err.response?.data?.message || 'Cannot read this book.');
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  if (loading) return <div className="user-loading">Loading user info…</div>;
+
+  return (
+    <div className="user-dashboard">
+      <div className="user-info">
+        <h2>👤 Welcome, {user.name}</h2>
+        <p>Email: {user.email}</p>
+      </div>
+
+      <div className="user-books">
+        <h3>📚 Purchased Books</h3>
+        {user.purchasedBooks.length === 0 ? (
+          <p>No books purchased yet.</p>
+        ) : (
+          <ul className="book-list">
+            {user.purchasedBooks.map((book) => (
+              <li key={book._id} className="book-item">
+                <div className="book-details">
+                  <h4>{book.title}</h4>
+                  <p>Genre: {book.genre}</p>
+                  <p>Price: ${book.price}</p>
+                </div>
+                <div>
+                  <button
+                    onClick={() => handleRemoveBook(book._id)}
+                    className="delete-button"
+                  >
+                    ❌ Remove
+                  </button>
+                  <button
+                    onClick={() => handleReadBook(book._id)}
+                    className="read-button"
+                  >
+                    📖 Read
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default User;
+
+------------------------------------
+
+Login.jsx : ---------->
+import React, { useState } from 'react';
+import axios from 'axios';
+
+const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post('/api/auth/login', { email, password });
+      localStorage.setItem('token', res.data.token);
+      window.location.href = '/user'; // Redirect to user dashboard
+    } catch (err) {
+      alert('Login failed. Check email/password.');
+    }
+  };
+
+  return (
+    <div className="login">
+      <h2>User Login</h2>
+      <form onSubmit={handleLogin}>
+        <input
+          type="email"
+          placeholder="Your Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Your Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Login</button>
+      </form>
+      <p>Not registered? <a href="/register">Register here</a></p>
+    </div>
+  );
+};
+
+export default Login;
+-------------------------------------
+
+Register.jsx :----------->
+import React, { useState } from 'react';
+import axios from 'axios';
+
+const Register = () => {
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+  });
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      // ✅ Corrected endpoint
+      const res = await axios.post('/api/auth/register', form);
+      localStorage.setItem('token', res.data.token); // Save token (if returned)
+      alert('Registration successful!');
+      window.location.href = '/user'; // Redirect to user dashboard
+    } catch (err) {
+      console.error(err.response?.data || err.message);
+      alert(err.response?.data?.message || 'Registration failed. Try again.');
+    }
+  };
+
+  return (
+    <div className="register">
+      <h2>User Registration</h2>
+      <form onSubmit={handleRegister}>
+        <input
+          type="text"
+          placeholder="Full Name"
+          name="name"
+          value={form.name}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="email"
+          placeholder="Email Address"
+          name="email"
+          value={form.email}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          name="password"
+          value={form.password}
+          onChange={handleChange}
+          required
+        />
+        <button type="submit">Register</button>
+      </form>
+      <p>Already registered? <a href="/login">Login here</a></p>
+    </div>
+  );
+};
+
+export default Register;
+-------------------------------------------
+
+BookList.jsx : ------->
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+
+const BookList = () => {
+  const [books, setBooks] = useState([]);
+  const [message, setMessage] = useState('');
+
+  // Fetch all books from the database
+  const fetchBooks = async () => {
+    try {
+      const res = await axios.get('/api/books');
+      setBooks(res.data);
+    } catch (err) {
+      console.error('Error fetching books:', err);
+    }
+  };
+
+  // Handle book purchase
+  const handleBuy = async (bookId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        setMessage('You must be logged in to purchase a book.');
+        return;
+      }
+
+      await axios.post(
+        '/api/user/buy',
+        { bookId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setMessage('✅ Book purchased!');
+    } catch (err) {
+      console.error(err.response?.data || err.message);
+      setMessage('❌ Error purchasing book');
+    }
+  };
+
+  useEffect(() => {
+    fetchBooks();
+  }, []);
+
+  return (
+    <div className="book-list">
+      <h2>📚 Book Store</h2>
+      {message && <p style={{ color: 'blue' }}>{message}</p>}
+
+      <div className="books-grid" style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
+        {books.map((book) => (
+          <div
+            key={book._id}
+            className="book-card"
+            style={{
+              border: '1px solid #ccc',
+              padding: '10px',
+              borderRadius: '10px',
+              width: '180px',
+              textAlign: 'center',
+            }}
+          >
+            <img src={book.image} alt={book.title} width="100%" height="200px" style={{ objectFit: 'cover' }} />
+            <h4>{book.title}</h4>
+            <p><strong>Author:</strong> {book.author}</p>
+            <p><strong>Genre:</strong> {book.genre}</p>
+            <p><strong>Price:</strong> ${book.price}</p>
+            <button onClick={() => handleBuy(book._id)}>🛒 Buy</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default BookList;
+--------------------------------------------
+
+AdminLogin.jsx : ------------>
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate, Link } from 'react-router-dom';
+
+const AdminLogin = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+
+  const handleAdminLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post('http://localhost:5000/api/admin/login', {
+        email,
+        password
+      });
+      localStorage.setItem('adminToken', res.data.token);
+      localStorage.setItem('user', JSON.stringify(res.data.admin));
+      navigate('/admin');
+    } catch (err) {
+      alert('Login failed. Check email/password.');
+      console.error(err);
+    }
+  };
+
+  return (
+    <div className="admin-login-form">
+      <h2>Admin Login</h2>
+      <form onSubmit={handleAdminLogin}>
+        <input
+          type="email"
+          placeholder="Admin Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Admin Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Login</button>
+      </form>
+      <p>
+        Not a user? <Link to="/login">User Login</Link>
+      </p>
+    </div>
+  );
+};
+
+export default AdminLogin;
+-------------------------------------------------
+
+AdminDashboard.jsx :----------->
+
+
+// Frontend/components/AdminDashboard.jsx
+import React, { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
+
+const AdminDashboard = () => {
+  const [admin, setAdmin] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [books, setBooks] = useState([]);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  // Book form state
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [genre, setGenre] = useState('');
+  const [price, setPrice] = useState('');
+  const [image, setImage] = useState(null);
+  const [pdf, setPdf] = useState(null);
+
+  const token = localStorage.getItem('adminToken');
+
+  // Fetch all registered users
+  const fetchUsers = useCallback(async () => {
+    try {
+      const res = await axios.get('/api/admin/users', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUsers(res.data);
+    } catch (err) {
+      console.error('Error fetching users:', err);
+    }
+  }, [token]);
+
+  // Fetch all books
+  const fetchBooks = useCallback(async () => {
+    try {
+      const res = await axios.get('/api/books');
+      setBooks(res.data);
+    } catch (err) {
+      console.error('Error fetching books:', err);
+    }
+  }, []);
+
+  // Admin login handler
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post('/api/admin/login', { email, password });
+      localStorage.setItem('adminToken', res.data.token);
+      setAdmin(res.data.admin);
+      fetchUsers();
+      fetchBooks();
+    } catch (err) {
+      alert('Invalid admin credentials');
+    }
+  };
+
+  // Delete user
+  const handleDeleteUser = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this user?')) return;
+    try {
+      await axios.delete(`/api/admin/users/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUsers(users.filter((u) => u._id !== id));
+    } catch (err) {
+      console.error('Error deleting user:', err);
+    }
+  };
+
+  // Create book
+  const handleCreateBook = async (e) => {
+    e.preventDefault();
+
+    if (!image || !pdf) {
+      alert('Please upload both image and PDF');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('author', author);
+    formData.append('genre', genre);
+    formData.append('price', price);
+    formData.append('image', image);
+    formData.append('pdf', pdf);
+
+    try {
+      const res = await axios.post('/api/admin/books', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      alert(`Book "${res.data.title}" created successfully!`);
+
+      // Clear form
+      setTitle('');
+      setAuthor('');
+      setGenre('');
+      setPrice('');
+      setImage(null);
+      setPdf(null);
+      fetchBooks(); // Refresh book list
+    } catch (err) {
+      console.error('Error creating book:', err.response || err);
+      alert(err.response?.data?.message || 'Failed to create book');
+    }
+  };
+
+  // Delete book
+  const handleDeleteBook = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this book?')) return;
+    try {
+      await axios.delete(`/api/admin/books/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert('Book deleted successfully');
+      setBooks(books.filter((b) => b._id !== id));
+    } catch (err) {
+      console.error('Error deleting book:', err);
+      alert('Failed to delete book');
+    }
+  };
+
+  // Load admin info, users, and books
+  useEffect(() => {
+    const fetchAdmin = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await axios.get('/api/admin/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setAdmin(res.data.admin);
+        fetchUsers();
+        fetchBooks();
+      } catch (err) {
+        console.error('Admin auth failed:', err);
+        localStorage.removeItem('adminToken');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAdmin();
+  }, [fetchUsers, fetchBooks, token]);
+
+  if (loading) return <p>Loading...</p>;
+
+  if (!admin) {
+    return (
+      <form onSubmit={handleLogin} className="admin-login-form">
+        <h2>Admin Login</h2>
+        <input
+          type="email"
+          placeholder="Admin Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Admin Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Login</button>
+      </form>
+    );
+  }
+
+  return (
+    <div className="admin-dashboard">
+      <h2>Welcome, {admin.name}</h2>
+      <p>Email: {admin.email}</p>
+
+      <div className="analytics">
+        <h3>📊 Dashboard Analytics</h3>
+        <p>Total Registered Users: <strong>{users.length}</strong></p>
+        <p>Total Created Books: <strong>{books.length}</strong></p>
+      </div>
+
+      <h3>👥 Registered Users</h3>
+      {users.length === 0 ? <p>No users found.</p> :
+        <ul className="user-list">
+          {users.map((user) => (
+            <li key={user._id}>
+              {user.name} ({user.email})
+              <button onClick={() => handleDeleteUser(user._id)}>❌ Delete</button>
+            </li>
+          ))}
+        </ul>
+      }
+
+      <h3>📚 Created Books</h3>
+      {books.length === 0 ? <p>No books yet.</p> :
+        <ul className="book-list">
+          {books.map((book) => (
+            <li key={book._id}>
+              {book.title} by {book.author}
+              <button onClick={() => handleDeleteBook(book._id)}>❌ Delete Book</button>
+            </li>
+          ))}
+        </ul>
+      }
+
+      <h3>➕ Create New Book</h3>
+      <form onSubmit={handleCreateBook} className="book-form">
+        <input
+          type="text"
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Author"
+          value={author}
+          onChange={(e) => setAuthor(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Genre"
+          value={genre}
+          onChange={(e) => setGenre(e.target.value)}
+          required
+        />
+        <input
+          type="number"
+          placeholder="Price"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          required
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setImage(e.target.files[0])}
+          required
+        />
+        <input
+          type="file"
+          accept="application/pdf"
+          onChange={(e) => setPdf(e.target.files[0])}
+          required
+        />
+        <button type="submit">Create Book</button>
+      </form>
+    </div>
+  );
+};
+
+export default AdminDashboard;
+
+-------------------------------------------------------
+
+App.js :------->
+import React from 'react';
+import './styles.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import BookList from './pages/BookList';
+import User from './pages/User';
+import AdminLogin from './pages/AdminLogin'; // Admin Login page
+import AdminDashboard from './pages/AdminDashboard'; // Admin Dashboard
+
+function App() {
+  return (
+    <Router>
+      <Navbar />
+
+      <main className="container">
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/booklist" element={<BookList />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/user" element={<User />} />
+
+          {/* Admin Routes */}
+          <Route path="/admin-login" element={<AdminLogin />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        </Routes>
+      </main>
+    </Router>
+  );
+}
+
+export default App;
+---------------------------------
+
+index.js :--->
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './styles.css';
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+--------------------------------------
+styles.css : ----->
+/* Reset and Base Styling */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #e9f0f7;
+  color: #333;
+}
+
+/* Navbar Styling */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1abc9c;
+  padding: 1rem 3rem;
+  box-shadow: 0 3px 8px rgba(26, 188, 156, 0.4);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+
+.navbar h2 {
+  color: white;
+  font-size: 1.9rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin: 0;
+  user-select: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.nav-links a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #0d665c;
+}
+
+/* Home Container */
+.home-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px 40px;
+  text-align: center;
+}
+
+.home-container h2 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 10px;
+  letter-spacing: 1.2px;
+}
+
+.home-container p {
+  font-size: 1.2rem;
+  color: #555;
+  margin-bottom: 40px;
+}
+
+/* Genre Section */
+.genre-section {
+  margin-bottom: 50px;
+}
+
+.genre-title {
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+  color: #2c3e50;
+  border-left: 6px solid #1abc9c;
+  padding-left: 12px;
+  text-align: left;
+}
+
+/* Horizontal Book Scroll Section */
+.books-horizontal-scroll {
+  display: flex;
+  overflow-x: auto;
+  gap: 30px;
+  padding: 15px 20px;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.books-horizontal-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.books-horizontal-scroll::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+
+/* Book Card */
+.book-card {
+  flex: 0 0 220px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  text-align: center;
+}
+
+.book-card:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.18);
+}
+
+.book-image {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.book-card h4 {
+  font-size: 1.2rem;
+  color: #34495e;
+  margin: 0 0 6px 0;
+}
+
+.book-card p {
+  font-size: 1rem;
+  color: #7f8c8d;
+  font-style: italic;
+  margin: 0;
+}
+
+/* BookList Container */
+.booklist-container {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px 60px;
+  text-align: center;
+}
+
+.booklist-container h2 {
+  font-size: 2.5rem;
+  margin-bottom: 30px;
+  color: #2c3e50;
+  letter-spacing: 1.2px;
+}
+
+.booklist-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 30px;
+}
+
+.booklist-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.booklist-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.15);
+}
+
+.booklist-image {
+  width: 180px;
+  height: 260px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.booklist-info h3 {
+  margin: 0 0 6px;
+  color: #34495e;
+}
+
+.booklist-info .author {
+  font-style: italic;
+  color: #7f8c8d;
+  margin-bottom: 8px;
+}
+
+.genre-tag {
+  display: inline-block;
+  background-color: #1abc9c;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 12px;
+  user-select: none;
+}
+
+.price-rating {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.price {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #27ae60;
+}
+
+.rating {
+  color: #f39c12;
+  font-size: 1.2rem;
+}
+
+.star {
+  margin: 0 1px;
+}
+
+.star.empty {
+  color: #ddd;
+}
+
+/* Buy Button */
+.buy-btn {
+  background-color: #1abc9c;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 100%;
+  user-select: none;
+}
+
+.buy-btn:hover {
+  background-color: #16a085;
+}
+
+/* Footer Styling */
+.footer {
+  background-color: #1e2b38;
+  color: #e0e0e0;
+  padding: 40px 20px 20px;
+  text-align: center;
+  border-top: 3px solid #16a085;
+  margin-top: 60px;
+}
+
+.footer-content {
+  margin-bottom: 20px;
+}
+
+.footer-content p {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.footer-icons {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 20px;
+}
+
+.footer-icons a img {
+  width: 40px;
+  height: 40px;
+  filter: brightness(0) invert(1);
+  transition: filter 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+}
+
+.footer-icons a:hover img {
+  filter: brightness(0.9) invert(0.8);
+  transform: scale(1.2);
+}
+
+.footer-bottom small {
+  color: #aaa;
+  font-size: 0.95rem;
+  display: block;
+  margin-top: 15px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .book-card {
+    flex: 0 0 180px;
+    padding: 14px;
+  }
+
+  .book-image {
+    height: 220px;
+  }
+
+  .booklist-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  .booklist-image {
+    width: 140px;
+    height: 210px;
+  }
+
+  .footer-icons {
+    gap: 25px;
+  }
+}
+
+@media (max-width: 480px) {
+  .book-card {
+    flex: 0 0 140px;
+    padding: 12px;
+  }
+
+  .book-image {
+    height: 170px;
+  }
+
+  .booklist-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .booklist-image {
+    width: 100%;
+    height: auto;
+  }
+
+  .footer-icons a img {
+    width: 30px;
+    height: 30px;
+  }
+
+  .footer-content p {
+    font-size: 1rem;
+  }
+}
+.search-bar {
+  width: 300px;
+  max-width: 90%;
+  padding: 12px 18px;
+  font-size: 1rem;
+  border-radius: 30px;
+  border: 1px solid #ccc;
+  margin-bottom: 30px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.search-bar:focus {
+  border-color: #1abc9c;
+}
+.user-profile {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.user-profile h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #2c3e50;
+  text-align: center;
+}
+.delete-btn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+  background-color: #c0392b;
+}
+.toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #2ecc71;
+  color: white;
+  padding: 15px 25px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  z-index: 2000;
+  transition: opacity 0.3s ease;
+}
+.logout-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.logout-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #0d665c;
+}
+.books-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.book-card {
+  width: 200px;
+  padding: 10px;
+  box-shadow: 0 0 5px gray;
+  border-radius: 8px;
+}
+.book-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+/* Admin Login Form */
+form {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+form h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+form input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+form button {
+  width: 100%;
+  padding: 12px;
+  background-color: #2e86de;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #1c5fab;
+}
+
+/* Admin Dashboard */
+.admin-dashboard {
+  max-width: 800px;
+  margin: 30px auto;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
+}
+
+.admin-dashboard h2 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.admin-dashboard p {
+  margin-bottom: 20px;
+}
+
+.admin-dashboard h3 {
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+.admin-dashboard ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+.admin-dashboard li {
+  background-color: #f1f1f1;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admin-dashboard button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  background-color: #e74c3c;
+  color: white;
+  cursor: pointer;
+}
+
+.admin-dashboard button:hover {
+  background-color: #c0392b;
+}
+.admin-analytics {
+  background-color: #f0f9ff;
+  padding: 15px;
+  margin: 20px 0;
+  border-left: 5px solid #3498db;
+  border-radius: 8px;
+}
+.admin-analytics p {
+  margin: 0;
+  font-size: 1.1rem;
+}
+.admin-dashboard {
+  padding: 20px;
+}
+
+.admin-dashboard h2 {
+  margin-bottom: 10px;
+}
+
+.analytics {
+  background-color: #f0f0f0;
+  padding: 15px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.user-list {
+  list-style: none;
+  padding: 0;
+}
+
+.user-list li {
+  margin-bottom: 10px;
+  padding: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.user-list button {
+  margin-left: 10px;
+  background-color: crimson;
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.admin-login-form {
+  max-width: 400px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #f7f7f7;
+  border-radius: 10px;
+}
+
+.admin-login-form input {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 8px;
+}
+/* Navbar container */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1abc9c;
+  color: white;
+  padding: 12px 24px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  flex-wrap: wrap;
+}
+
+/* Title/logo */
+.navbar-title h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
+}
+
+/* Link container */
+.nav-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Individual link buttons */
+.nav-links a {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 8px 14px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.nav-links a:hover {
+  background-color: #16a085;
+}
+
+/* Logout button */
+.nav-links button {
+  background-color: crimson;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.nav-links button:hover {
+  background-color: #b30000;
+}
+
+/* Responsive design */
+@media screen and (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .nav-links {
+    margin-top: 10px;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .nav-links a,
+  .nav-links button {
+    width: 100%;
+    text-align: left;
+  }
+}
+.user-dashboard {
+  padding: 20px;
+}
+
+.user-dashboard h2 {
+  margin-bottom: 10px;
+  color: #2b2b2b;
+}
+
+.user-dashboard p {
+  font-size: 16px;
+}
+
+.purchased-books {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.purchased-book-card {
+  background: #f9f9f9;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.purchased-book-card img {
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+.purchased-book-card h4 {
+  margin: 4px 0;
+}
+
+.purchased-book-card button {
+  margin-top: 8px;
+  padding: 6px 12px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.purchased-book-card button:hover {
+  background: #c0392b;
+}
+/* AdminDashboard.css */
+
+.admin-dashboard {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.admin-dashboard h2 {
+  color: #2c3e50;
+}
+
+.analytics {
+  background-color: #f7f7f7;
+  padding: 15px;
+  margin: 15px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.user-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 30px;
+}
+
+.user-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #eef2f7;
+  padding: 10px 15px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+}
+
+.user-list button {
+  background-color: #e74c3c;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.user-list button:hover {
+  background-color: #c0392b;
+}
+
+/* Admin login form */
+.admin-login-form {
+  max-width: 400px;
+  margin: 50px auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-login-form input,
+.book-form input {
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.admin-login-form button,
+.book-form button {
+  padding: 10px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.admin-login-form button:hover,
+.book-form button:hover {
+  background-color: #2980b9;
+}
+
+/* Book creation form */
+.book-form {
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f7fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.book-form input[type="file"] {
+  padding: 3px;
+}
+
+.book-form h3 {
+  margin-bottom: 10px;
+}
+
+---------------------
+
+package.jason :----->
+{
+  "name": "client",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.6.4",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.11.0",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-icons": "^5.5.0",
+    "react-router-dom": "^7.7.1",
+    "react-scripts": "5.0.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "proxy": "http://localhost:5000"
+}
+--------------o-------------------o---------------------o------------------------------------------------o-----------------------------------------o-----------------------o---------------------o-------------------o----------------------o----------o
+                                
+ 
+                                                              BACKEND --------------- CODES
+
+
+             config :
+
+db.js :------->
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+
+dotenv.config();
+
+const connectDB = async () => {
+  try {
+    const mongoURI = process.env.MONGO_URI;
+
+    if (!mongoURI) {
+      throw new Error('❌ MONGO_URI is missing in the .env file');
+    }
+
+    const conn = await mongoose.connect(mongoURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+
+    console.log(`✅ MongoDB connected: ${conn.connection.name}`);
+  } catch (err) {
+    console.error('❌ MongoDB connection error:', err.message);
+    process.exit(1); // Exit with failure
+  }
+};
+
+
+module.exports = connectDB;
+----------------------------------------------------
+
+controller :
+
+adminController.js :----->
+const Admin = require('../models/admin'); // ✅ Correct model
+const User = require('../models/User');
+const generateToken = require('../utils/generateToken'); // ✅ Corrected path
+
+// Admin login
+exports.loginAdmin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const adminDoc = await Admin.findOne({ email });
+    if (!adminDoc || !(await adminDoc.matchPassword(password))) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    res.json({
+      _id: adminDoc._id,
+      admin: {
+        name: adminDoc.name,
+        email: adminDoc.email,
+      },
+      token: generateToken(adminDoc._id),
+    });
+  } catch (error) {
+    console.error('Admin login error:', error.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Get all users (for admin dashboard)
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({}).select('-password');
+    res.json(users);
+  } catch (error) {
+    console.error('Get users error:', error.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Delete user by ID
+exports.deleteUser = async (req, res) => {
+  try {
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
+    if (!deletedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    res.json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Delete user error:', error.message);
+    res.status(500).json({ message: 'Error deleting user' });
+  }
+};
+--------------------
+authController :------->
+const User = require('../models/User');
+const generateToken = require('../models/auth');
+
+// Register new user
+exports.registerUser = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    const userExists = await User.findOne({ email });
+    if (userExists) return res.status(400).json({ message: 'User already exists' });
+
+    const user = await User.create({ name, email, password });
+
+    res.status(201).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      token: generateToken(user._id)
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+// Login user
+exports.loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(400).json({ message: 'Invalid credentials' });
+
+    const isMatch = await user.matchPassword(password);
+    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+
+    res.json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      token: generateToken(user._id)
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+------------------------
+bookController.js :----->
+// Backend/controllers/bookController.js
+const path = require('path');
+const fs = require('fs');
+const Book = require('../models/Book');
+const User = require('../models/User');
+
+// 📚 Get all books
+exports.getAllBooks = async (req, res) => {
+  try {
+    const books = await Book.find({});
+    res.json(books);
+  } catch (error) {
+    console.error("Error fetching books:", error.message);
+    res.status(500).json({ message: 'Error fetching books' });
+  }
+};
+
+// 📖 Read a book (only if purchased)
+exports.readBook = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    const bookId = req.params.bookId;
+
+    if (!user.purchasedBooks.includes(bookId)) {
+      return res.status(403).json({ message: "You must purchase this book first" });
+    }
+
+    const book = await Book.findById(bookId);
+    if (!book) return res.status(404).json({ message: "Book not found" });
+
+    // Check if the PDF file exists on the server
+    const pdfPath = path.join(__dirname, '..', book.pdfUrl || '');
+    if (!book.pdfUrl || !fs.existsSync(pdfPath)) {
+      return res.status(404).json({ message: "PDF file not found" });
+    }
+
+    res.json({ title: book.title, pdfUrl: book.pdfUrl });
+  } catch (error) {
+    console.error("Error in readBook:", error.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// 📝 Admin: Create a new book
+exports.createBook = async (req, res) => {
+  try {
+    const { title, author, genre, price } = req.body;
+
+    if (!req.files?.pdf) {
+      return res.status(400).json({ message: "PDF file is required" });
+    }
+
+    const imageFile = req.files?.image ? req.files.image[0] : null;
+    const pdfFile = req.files.pdf[0];
+
+    const newBook = new Book({
+      title,
+      author,
+      genre,
+      price,
+      image: imageFile ? `/uploads/images/${imageFile.filename}` : null,
+      pdfUrl: `/uploads/pdfs/${pdfFile.filename}`,
+    });
+
+    await newBook.save();
+    console.log(`Book created: ${newBook.title}, PDF: ${newBook.pdfUrl}`);
+    res.status(201).json(newBook);
+  } catch (error) {
+    console.error("Error in createBook:", error.message);
+    res.status(500).json({ message: "Error creating book" });
+  }
+};
+
+// 🗑 Delete a book (Admin only)
+exports.deleteBook = async (req, res) => {
+  try {
+    const book = await Book.findById(req.params.bookId);
+    if (!book) return res.status(404).json({ message: "Book not found" });
+
+    // Delete files
+    if (book.image) {
+      const imagePath = path.join(__dirname, '..', book.image);
+      if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+    }
+    if (book.pdfUrl) {
+      const pdfPath = path.join(__dirname, '..', book.pdfUrl);
+      if (fs.existsSync(pdfPath)) fs.unlinkSync(pdfPath);
+    }
+
+    await book.deleteOne();
+    res.json({ message: `Book "${book.title}" deleted successfully` });
+  } catch (error) {
+    console.error("Error deleting book:", error.message);
+    res.status(500).json({ message: "Server error while deleting book" });
+  }
+};
+
+-------------------------------
+userController.js : -------->
+const User = require('../models/User');
+const Book = require('../models/Book');
+
+// 🛒 Buy a book
+exports.buyBook = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    const { bookId } = req.body;
+
+    // Check if already purchased
+    if (user.purchasedBooks.includes(bookId)) {
+      return res.status(400).json({ message: 'You already purchased this book.' });
+    }
+
+    user.purchasedBooks.push(bookId);
+    await user.save();
+
+    res.status(200).json({ message: 'Book purchased successfully!' });
+  } catch (error) {
+    console.error('Error in buyBook:', error.message);
+    res.status(500).json({ message: 'Server error while purchasing book' });
+  }
+};
+
+// 📚 Get all purchased books
+exports.getPurchasedBooks = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate('purchasedBooks');
+    res.json(user.purchasedBooks);
+  } catch (error) {
+    console.error('Error in getPurchasedBooks:', error.message);
+    res.status(500).json({ message: 'Error fetching purchased books' });
+  }
+};
+
+// ❌ Delete a purchased book
+exports.deletePurchasedBook = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    const bookId = req.params.bookId;
+
+    user.purchasedBooks = user.purchasedBooks.filter(
+      (id) => id.toString() !== bookId
+    );
+
+    await user.save();
+    res.status(200).json({ message: 'Book removed from purchases.' });
+  } catch (error) {
+    console.error('Error in deletePurchasedBook:', error.message);
+    res.status(500).json({ message: 'Server error while removing book' });
+  }
+};
+
+// ✅ NEW: Return user profile info (name, email, and purchased books)
+exports.getUserProfile = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate('purchasedBooks');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    res.json({
+      name: user.name,
+      email: user.email,
+      purchasedBooks: user.purchasedBooks,
+    });
+  } catch (error) {
+    console.error('Error fetching user profile:', error.message);
+    res.status(500).json({ message: 'Server error while fetching profile' });
+  }
+};
+-----------------------------------------------
+middleware:
+
+adminMiddleware.js :------>
+// Backend/middleware/adminMiddleware.js
+const jwt = require('jsonwebtoken');
+const Admin = require('../models/admin'); // ✅ Capitalized to match filename
+
+exports.adminProtect = async (req, res, next) => {
+  let token;
+
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    try {
+      // Extract token
+      token = req.headers.authorization.split(' ')[1];
+
+      // Verify token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      // Find admin by decoded id
+      const admin = await Admin.findById(decoded.id).select('-password');
+      if (!admin) {
+        return res.status(404).json({ message: 'Admin not found' });
+      }
+
+      // Attach admin object to request
+      req.admin = admin;
+      return next();
+    } catch (error) {
+      console.error('Admin token verification failed:', error.message);
+      return res
+        .status(401)
+        .json({ message: 'Not authorized, token invalid or expired' });
+    }
+  }
+
+  // No token case
+  return res.status(401).json({ message: 'Not authorized, no token provided' });
+};
+
+--------------------------------
+authMiddleware.js:--------->
+const jwt = require('jsonwebtoken');
+const User = require('../models/User');
+
+exports.protect = async (req, res, next) => {
+  let token;
+
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    try {
+      token = req.headers.authorization.split(' ')[1];
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+      req.user = await User.findById(decoded.id).select('-password');
+      next();
+    } catch (error) {
+      res.status(401).json({ message: 'Not authorized, token failed' });
+    }
+  }
+
+  if (!token) {
+    res.status(401).json({ message: 'Not authorized, no token' });
+  }
+};
+------------------------------------
+models :
+
+admin.js :
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+
+// Admin Schema
+const adminSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true, // ✅ Make name required
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true, // ✅ Ensures no duplicate admin emails
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+}, {
+  timestamps: true, // ✅ Optional: adds createdAt and updatedAt fields
+});
+
+// Compare entered password with hashed password
+adminSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
+// Hash password before saving
+adminSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+
+const Admin = mongoose.model('Admin', adminSchema);
+module.exports = Admin;
+-----------------------------------------
+auth.js:--------->
+const jwt = require('jsonwebtoken');
+
+function generateToken(id) {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: '30d',
+  });
+}
+
+module.exports = generateToken;
+-----------------------------------------------------
+Book.js :-------------->
+// Backend/models/Book.js
+const mongoose = require('mongoose');
+
+const bookSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: [true, 'Book title is required'],
+      trim: true,
+    },
+    author: {
+      type: String,
+      required: [true, 'Author is required'],
+      trim: true,
+    },
+    genre: {
+      type: String,
+      required: [true, 'Genre is required'],
+    },
+    price: {
+      type: Number,
+      required: [true, 'Price is required'],
+      min: 0,
+    },
+    image: {
+      type: String, // 📸 cover image URL (stored by multer)
+      required: true,
+    },
+    pdfUrl: {
+      type: String, // 📕 PDF file URL (stored by multer)
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+
+const Book = mongoose.model('Book', bookSchema);
+
+module.exports = Book;
+
+--------------------------------------
+User.js----------->
+const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+
+const userSchema = new mongoose.Schema({
+  name: String,
+  email: { type: String, unique: true },
+  password: String,
+  purchasedBooks: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Book'
+    }
+  ]
+});
+
+// Hash password before saving
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+  next();
+});
+
+// Method to compare passwords
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
+};
+
+const User = mongoose.model('User', userSchema);
+module.exports = User;
+------------------------------------------
+routes :
+adminRoutes.js :------------->
+// Backend/routes/adminRoutes.js
+const express = require('express');
+const multer = require('multer');
+const path = require('path');
+const {
+  loginAdmin,
+  getAllUsers,
+  deleteUser,
+} = require('../controllers/adminController');
+const { createBook } = require('../controllers/bookController');
+const { adminProtect } = require('../middleware/adminMiddleware');
+
+const router = express.Router();
+
+// ✅ Multer setup for file uploads (image + pdf)
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, 'uploads/images'); // cover images folder
+    } else if (file.mimetype === 'application/pdf') {
+      cb(null, 'uploads/pdfs'); // pdfs folder
+    } else {
+      cb(new Error('Only images and PDFs are allowed'), false);
+    }
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname)); // unique file names
+  },
+});
+
+const upload = multer({ storage });
+
+// 🔑 Login route
+router.post('/login', loginAdmin);
+
+// ✅ Get current logged-in admin info
+router.get('/me', adminProtect, (req, res) => {
+  res.json({
+    admin: {
+      _id: req.admin._id,
+      name: req.admin.name,
+      email: req.admin.email,
+    },
+  });
+});
+
+// 👥 Admin-only routes
+router.get('/users', adminProtect, getAllUsers);
+router.delete('/users/:id', adminProtect, deleteUser);
+
+// 📚 Create a new book (with file upload)
+router.post(
+  '/books',
+  adminProtect,
+  upload.fields([
+    { name: 'image', maxCount: 1 },
+    { name: 'pdf', maxCount: 1 },
+  ]),
+  createBook
+);
+
+module.exports = router;
+
+-------------------------------------------
+authRoutes :-------->
+const express = require('express');
+const { registerUser, loginUser } = require('../controllers/authController');
+
+const router = express.Router();
+
+router.post('/register', registerUser);
+router.post('/login', loginUser);
+
+module.exports = router;
+----------------------------------------------
+userbooks.js :-------->
+const express = require('express');
+const { getAllBooks } = require('../controllers/bookController');
+
+const router = express.Router();
+
+router.get('/', getAllBooks);
+
+module.exports = router;
+---------------------------------------------
+userRoutes.js :---------->
+const express = require('express');
+const { protect } = require('../middleware/authMiddleware');
+const {
+  buyBook,
+  getPurchasedBooks,
+  deletePurchasedBook,
+  getUserProfile,
+} = require('../controllers/userController');
+
+const router = express.Router();
+
+// ✅ NEW: Get user profile
+router.get('/profile', protect, getUserProfile);
+
+// Buy a book (POST /api/user/buy)
+router.post('/buy', protect, buyBook);
+
+// Get all purchased books for the logged-in user (GET /api/user/books)
+router.get('/books', protect, getPurchasedBooks);
+
+// Delete a purchased book (DELETE /api/user/books/:bookId)
+router.delete('/books/:bookId', protect, deletePurchasedBook);
+
+module.exports = router;
+----------------------------------------
+seed :
+
+seedAdmin.js :---->
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const Admin = require('../models/admin');
+const bcrypt = require('bcryptjs');
+
+dotenv.config();
+mongoose.connect(process.env.MONGO_URI);
+
+const seedAdmin = async () => {
+  try {
+    const existing = await Admin.findOne({ email: 'mdfarial100@gmail.com' });
+    if (existing) {
+      console.log('Admin already exists');
+      process.exit();
+    }
+
+    const hashedPassword = await bcrypt.hash('mongodb69@', 10);
+    await Admin.create({
+      name: 'Mohammad Farial',
+      email: 'mdfarial100@gmail.com',
+      password: 'mongodb69@',
+    });
+
+    console.log('✅ Admin seeded');
+    process.exit();
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
+};
+
+seedAdmin();
+-------------------------------------------
+seedBooks.js :------>
+const mongoose = require('mongoose');
+const dotenv = require('dotenv');
+const Book = require('../models/Book');
+
+dotenv.config();
+mongoose.connect(process.env.MONGO_URI);
+
+const books = [
+  {
+    title: 'Atomic Habits',
+    author: 'James Clear',
+    genre: 'Self-help',
+    price: 12.99,
+    image: 'https://i.ibb.co/0mYh3Xw/atomic-habits.jpg',
+  },
+  {
+    title: 'The Alchemist',
+    author: 'Paulo Coelho',
+    genre: 'Fiction',
+    price: 10.5,
+    image: 'https://i.ibb.co/jZG6F1K/alchemist.jpg',
+  },
+  {
+    title: '1984',
+    author: 'George Orwell',
+    genre: 'Dystopian',
+    price: 9.99,
+    image: 'https://i.ibb.co/0Ff4ns6/1984.jpg',
+  },
+  {
+    title: 'Deep Work',
+    author: 'Cal Newport',
+    genre: 'Productivity',
+    price: 14.0,
+    image: 'https://i.ibb.co/qY6cGVP/deep-work.jpg',
+  },
+  {
+    title: 'Rich Dad Poor Dad',
+    author: 'Robert Kiyosaki',
+    genre: 'Finance',
+    price: 13.5,
+    image: 'https://i.ibb.co/3WbMw5m/richdad.jpg',
+  },
+  {
+    title: 'Harry Potter',
+    author: 'J.K. Rowling',
+    genre: 'Fantasy',
+    price: 20.0,
+    image: 'https://i.ibb.co/qNVKhrj/harrypotter.jpg',
+  },
+  {
+    title: 'The Power of Now',
+    author: 'Eckhart Tolle',
+    genre: 'Spiritual',
+    price: 11.5,
+    image: 'https://i.ibb.co/dWwWkMZ/powerofnow.jpg',
+  },
+  {
+    title: 'Sapiens',
+    author: 'Yuval Noah Harari',
+    genre: 'History',
+    price: 18.75,
+    image: 'https://i.ibb.co/vV6tBmm/sapiens.jpg',
+  },
+  {
+    title: 'To Kill a Mockingbird',
+    author: 'Harper Lee',
+    genre: 'Classic',
+    price: 8.75,
+    image: 'https://i.ibb.co/rGJpP6h/mockingbird.jpg',
+  },
+  {
+    title: 'The Lean Startup',
+    author: 'Eric Ries',
+    genre: 'Business',
+    price: 15.25,
+    image: 'https://i.ibb.co/tcwqx9z/leanstartup.jpg',
+  },
+];
+
+const seedBooks = async () => {
+  try {
+    await Book.deleteMany();
+    await Book.insertMany(books);
+    console.log('✅ Books seeded');
+    process.exit();
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
+};
+
+seedBooks();
+------------------------------
+utils :
+generateTokens.js :----->
+const jwt = require("jsonwebtoken");
+
+const generateToken = (id) => {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
+  });
+};
+
+module.exports = generateToken;
+----------------------------------------------------
+.env :--------->
+PORT=5000
+MONGO_URI=mongodb+srv://mernweb:mongodb69%40@cluster0.muuv9ve.mongodb.net/webmern?retryWrites=true&w=majority&appName=Cluster0
+JWT_SECRET=mylibraryappsupersecret123
+---------------------------------------------------------------------
+package.jason{}:
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Backend for Library Management System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "seed:admin": "node seed/seedAdmin.js",
+    "seed:books": "node seed/seedBook.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.17.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
+------------------------------------------
+server.js :------------->
+const express = require('express');
+const dotenv = require('dotenv');
+const cors = require('cors');
+const mongoose = require('mongoose');
+
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes');
+const bookRoutes = require('./routes/userBooks');
+
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Basic route for root URL
+app.get('/', (req, res) => {
+  res.send('📚 API is running...');
+});
+
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/user', userRoutes);
+app.use('/api/admin', adminRoutes);
+app.use('/api/books', bookRoutes);
+
+// MongoDB connection
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log('✅ MongoDB connected');
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error('❌ Failed to connect to MongoDB:', err.message);
+  });
+----------------------------------------------------------------------------------------------------
+
+// Frontend/components/AdminDashboard.jsx
+import React, { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
+
+const AdminDashboard = () => {
+  const [admin, setAdmin] = useState(null);
+  const [users, setUsers] = useState([]);
+  const [books, setBooks] = useState([]);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(true);
+
+  // Book form state
+  const [title, setTitle] = useState('');
+  const [author, setAuthor] = useState('');
+  const [genre, setGenre] = useState('');
+  const [price, setPrice] = useState('');
+  const [image, setImage] = useState(null);
+  const [pdf, setPdf] = useState(null);
+
+  const token = localStorage.getItem('adminToken');
+
+  // Fetch all registered users
+  const fetchUsers = useCallback(async () => {
+    try {
+      const res = await axios.get('/api/admin/users', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUsers(res.data);
+    } catch (err) {
+      console.error('Error fetching users:', err);
+    }
+  }, [token]);
+
+  // Fetch all books
+  const fetchBooks = useCallback(async () => {
+    try {
+      const res = await axios.get('/api/books');
+      setBooks(res.data);
+    } catch (err) {
+      console.error('Error fetching books:', err);
+    }
+  }, []);
+
+  // Admin login handler
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post('/api/admin/login', { email, password });
+      localStorage.setItem('adminToken', res.data.token);
+      setAdmin(res.data.admin);
+      fetchUsers();
+      fetchBooks();
+    } catch (err) {
+      alert('Invalid admin credentials');
+    }
+  };
+
+  // Delete user
+  const handleDeleteUser = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this user?')) return;
+    try {
+      await axios.delete(`/api/admin/users/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setUsers(users.filter((u) => u._id !== id));
+    } catch (err) {
+      console.error('Error deleting user:', err);
+    }
+  };
+
+  // Create book
+  const handleCreateBook = async (e) => {
+    e.preventDefault();
+
+    if (!image || !pdf) {
+      alert('Please upload both image and PDF');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('author', author);
+    formData.append('genre', genre);
+    formData.append('price', price);
+    formData.append('image', image);
+    formData.append('pdf', pdf);
+
+    try {
+      const res = await axios.post('/api/admin/books', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      alert(`Book "${res.data.title}" created successfully!`);
+
+      // Clear form
+      setTitle('');
+      setAuthor('');
+      setGenre('');
+      setPrice('');
+      setImage(null);
+      setPdf(null);
+      fetchBooks(); // Refresh book list
+    } catch (err) {
+      console.error('Error creating book:', err.response || err);
+      alert(err.response?.data?.message || 'Failed to create book');
+    }
+  };
+
+  // Delete book
+  const handleDeleteBook = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this book?')) return;
+    try {
+      await axios.delete(`/api/admin/books/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert('Book deleted successfully');
+      setBooks(books.filter((b) => b._id !== id));
+    } catch (err) {
+      console.error('Error deleting book:', err);
+      alert('Failed to delete book');
+    }
+  };
+
+  // Load admin info, users, and books
+  useEffect(() => {
+    const fetchAdmin = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const res = await axios.get('/api/admin/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setAdmin(res.data.admin);
+        fetchUsers();
+        fetchBooks();
+      } catch (err) {
+        console.error('Admin auth failed:', err);
+        localStorage.removeItem('adminToken');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAdmin();
+  }, [fetchUsers, fetchBooks, token]);
+
+  if (loading) return <p>Loading...</p>;
+
+  if (!admin) {
+    return (
+      <form onSubmit={handleLogin} className="admin-login-form">
+        <h2>Admin Login</h2>
+        <input
+          type="email"
+          placeholder="Admin Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          placeholder="Admin Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
+        <button type="submit">Login</button>
+      </form>
+    );
+  }
+
+  return (
+    <div className="admin-dashboard">
+      <h2>Welcome, {admin.name}</h2>
+      <p>Email: {admin.email}</p>
+
+      <div className="analytics">
+        <h3>📊 Dashboard Analytics</h3>
+        <p>Total Registered Users: <strong>{users.length}</strong></p>
+        <p>Total Created Books: <strong>{books.length}</strong></p>
+      </div>
+
+      <h3>👥 Registered Users</h3>
+      {users.length === 0 ? <p>No users found.</p> :
+        <ul className="user-list">
+          {users.map((user) => (
+            <li key={user._id}>
+              {user.name} ({user.email})
+              <button onClick={() => handleDeleteUser(user._id)}>❌ Delete</button>
+            </li>
+          ))}
+        </ul>
+      }
+
+      <h3>📚 Created Books</h3>
+      {books.length === 0 ? <p>No books yet.</p> :
+        <ul className="book-list">
+          {books.map((book) => (
+            <li key={book._id}>
+              {book.title} by {book.author}
+              <button onClick={() => handleDeleteBook(book._id)}>❌ Delete Book</button>
+            </li>
+          ))}
+        </ul>
+      }
+
+      <h3>➕ Create New Book</h3>
+      <form onSubmit={handleCreateBook} className="book-form">
+        <input
+          type="text"
+          placeholder="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Author"
+          value={author}
+          onChange={(e) => setAuthor(e.target.value)}
+          required
+        />
+        <input
+          type="text"
+          placeholder="Genre"
+          value={genre}
+          onChange={(e) => setGenre(e.target.value)}
+          required
+        />
+        <input
+          type="number"
+          placeholder="Price"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          required
+        />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setImage(e.target.files[0])}
+          required
+        />
+        <input
+          type="file"
+          accept="application/pdf"
+          onChange={(e) => setPdf(e.target.files[0])}
+          required
+        />
+        <button type="submit">Create Book</button>
+      </form>
+    </div>
+  );
+};
+
+export default AdminDashboard;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
