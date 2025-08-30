@@ -8,7 +8,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/api/auth/login', { email, password });
+  const res = await axios.post('https://api-fable-forest.onrender.com/api/auth/login', { email, password });
       localStorage.setItem('token', res.data.token);
       window.location.href = '/user'; // Redirect to user dashboard
     } catch (err) {

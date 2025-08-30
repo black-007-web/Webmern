@@ -11,7 +11,7 @@ const BookReader = () => {
     const fetchBook = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get(`/api/user/read/${bookId}`, {
+  const res = await axios.get(`https://api-fable-forest.onrender.com/api/user/read/${bookId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setBook(res.data);

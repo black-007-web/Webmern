@@ -24,7 +24,7 @@ const AdminDashboard = () => {
   // Fetch all registered users
   const fetchUsers = useCallback(async () => {
     try {
-      const res = await axios.get('/api/admin/users', {
+  const res = await axios.get('https://api-fable-forest.onrender.com/api/admin/users', {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUsers(res.data);
@@ -36,7 +36,7 @@ const AdminDashboard = () => {
   // Fetch all books
   const fetchBooks = useCallback(async () => {
     try {
-      const res = await axios.get('/api/books');
+  const res = await axios.get('https://api-fable-forest.onrender.com/api/books');
       setBooks(res.data);
     } catch (err) {
       console.error('Error fetching books:', err);
@@ -47,7 +47,7 @@ const AdminDashboard = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post('/api/admin/login', { email, password });
+  const res = await axios.post('https://api-fable-forest.onrender.com/api/admin/login', { email, password });
       localStorage.setItem('adminToken', res.data.token);
       setAdmin(res.data.admin);
       fetchUsers();
@@ -61,7 +61,7 @@ const AdminDashboard = () => {
   const handleDeleteUser = async (id) => {
     if (!window.confirm('Are you sure you want to delete this user?')) return;
     try {
-      await axios.delete(`/api/admin/users/${id}`, {
+  await axios.delete(`https://api-fable-forest.onrender.com/api/admin/users/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setUsers(users.filter((u) => u._id !== id));
@@ -88,7 +88,7 @@ const AdminDashboard = () => {
     formData.append('pdf', pdf);
 
     try {
-      const res = await axios.post('/api/admin/books', formData, {
+  const res = await axios.post('https://api-fable-forest.onrender.com/api/admin/books', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${token}`,
@@ -114,7 +114,7 @@ const AdminDashboard = () => {
   const handleDeleteBook = async (id) => {
     if (!window.confirm('Are you sure you want to delete this book?')) return;
     try {
-      await axios.delete(`/api/admin/books/${id}`, {
+  await axios.delete(`https://api-fable-forest.onrender.com/api/admin/books/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert('Book deleted successfully');
@@ -133,7 +133,7 @@ const AdminDashboard = () => {
         return;
       }
       try {
-        const res = await axios.get('/api/admin/me', {
+  const res = await axios.get('https://api-fable-forest.onrender.com/api/admin/me', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setAdmin(res.data.admin);

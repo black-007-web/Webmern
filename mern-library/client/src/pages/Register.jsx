@@ -16,7 +16,7 @@ const Register = () => {
     e.preventDefault();
     try {
       // ✅ Corrected endpoint
-      const res = await axios.post('/api/auth/register', form);
+  const res = await axios.post('https://api-fable-forest.onrender.com/api/auth/register', form);
       localStorage.setItem('token', res.data.token); // Save token (if returned)
       alert('Registration successful!');
       window.location.href = '/user'; // Redirect to user dashboard

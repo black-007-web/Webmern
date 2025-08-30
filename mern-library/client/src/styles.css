@@ -728,3 +728,227 @@ form button:hover {
 .purchased-book-card button:hover {
   background: #c0392b;
 }
+.book-list {
+  padding: 20px;
+}
+
+.message {
+  color: blue;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.controls {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+}
+
+.genre-select {
+  padding: 8px 12px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+}
+
+.suggestions {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  list-style: none;
+  margin: 0 0 15px 0;
+  padding: 8px;
+  max-width: 400px;
+}
+
+.suggestions li {
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.suggestions li:hover {
+  background: #eee;
+}
+
+.suggestions .author {
+  color: #555;
+  font-size: 0.9em;
+}
+
+.books-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.book-card {
+  border: 1px solid #ccc;
+  padding: 12px;
+  border-radius: 10px;
+  width: 200px;
+  text-align: center;
+  background: #fff;
+  transition: transform 0.2s ease-in-out;
+}
+
+.book-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+}
+
+.book-image {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.buy-btn {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #0077ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.buy-btn:hover {
+  background: #005fcc;
+}
+/* --------- Purchase/Welcome Banner --------- */
+.message {
+  position: relative;
+  padding: 14px 18px 14px 54px;
+  margin: 16px 0 18px 0;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: left;
+  line-height: 1.4;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+  animation: slideIn 420ms cubic-bezier(.2,.7,.2,1) both;
+  overflow: hidden;
+}
+
+.message::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.9);
+  box-shadow: inset 0 0 0 2px rgba(0,0,0,0.06);
+}
+
+.message.success::after,
+.message.error::after {
+  position: absolute;
+  left: 19px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+}
+
+.message.success::after { content: "✅"; }
+.message.error::after { content: "⚠️"; }
+
+.message.success {
+  background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%);
+  color: #063a22;
+  border: 1px solid rgba(6, 58, 34, 0.2);
+}
+
+.message.error {
+  background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+  color: #6d0013;
+  border: 1px solid rgba(109, 0, 19, 0.2);
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-8px); filter: blur(2px); }
+  to   { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* Subtle sparkle overlay */
+.message.success .sparkle {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(rgba(255,255,255,0.7) 1px, transparent 2px),
+    radial-gradient(rgba(255,255,255,0.5) 1px, transparent 2px);
+  background-size: 18px 18px, 24px 24px;
+  background-position: 0 0, 10px 12px;
+  opacity: 0.35;
+  animation: shimmer 1.8s linear infinite;
+}
+
+@keyframes shimmer {
+  from { background-position: 0 0, 10px 12px; }
+  to   { background-position: 18px 18px, 28px 30px; }
+}
+
+/* ------- rest of your styles from before ------- */
+.controls { display: flex; gap: 15px; margin-bottom: 15px; }
+.search-input, .genre-select {
+  padding: 8px 12px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+}
+.suggestions {
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  list-style: none;
+  margin: 0 0 15px 0;
+  padding: 8px;
+  max-width: 400px;
+}
+.suggestions li {
+  padding: 6px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+.suggestions li:hover { background: #eee; }
+.suggestions .author { color: #555; font-size: 0.9em; }
+
+.books-grid { display: flex; flex-wrap: wrap; gap: 20px; }
+.book-card {
+  border: 1px solid #ccc;
+  padding: 12px;
+  border-radius: 10px;
+  width: 200px;
+  text-align: center;
+  background: #fff;
+  transition: transform 0.2s ease-in-out;
+}
+.book-card:hover { transform: scale(1.05); box-shadow: 0px 4px 10px rgba(0,0,0,0.1); }
+.book-image {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+.buy-btn {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #0077ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.buy-btn:hover { background: #005fcc; }

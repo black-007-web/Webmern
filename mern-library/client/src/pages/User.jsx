@@ -7,7 +7,7 @@ const User = () => {
   const [loading, setLoading] = useState(true);
 
   // Replace with your backend URL if frontend runs on a different port
-  const BACKEND_URL = 'http://localhost:5000';
+  const BACKEND_URL = 'https://api-fable-forest.onrender.com';
 
   const fetchProfile = async () => {
     try {
@@ -18,7 +18,7 @@ const User = () => {
         return;
       }
 
-      const res = await axios.get(`${BACKEND_URL}/api/user/profile`, {
+  const res = await axios.get(`${BACKEND_URL}/api/user/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -35,7 +35,7 @@ const User = () => {
   const handleRemoveBook = async (bookId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`${BACKEND_URL}/api/user/books/${bookId}`, {
+  await axios.delete(`${BACKEND_URL}/api/user/books/${bookId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       fetchProfile();
@@ -48,7 +48,7 @@ const User = () => {
   const handleReadBook = async (bookId) => {
     try {
       const token = localStorage.getItem('token');
-      const res = await axios.get(`${BACKEND_URL}/api/read/${bookId}`, {
+  const res = await axios.get(`${BACKEND_URL}/api/read/${bookId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

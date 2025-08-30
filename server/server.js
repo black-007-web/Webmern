@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 
 const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
+const userRoutes = require('./routes/userRoutes.js');
 const adminRoutes = require('./routes/adminRoutes');
 const bookRoutes = require('./routes/userBooks');
 const bookReadRoutes = require('./routes/bookReadRoutes'); // ✅ Read purchased book
