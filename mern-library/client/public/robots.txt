@@ -1,7 +1,0 @@
-# This file tells search engines what to crawl and not to crawl.
-# For more information, visit: https://www.robotstxt.org/
-
-User-agent: *
-Disallow:
-
-Sitemap: https://your-app-url.com/sitemap.xml
