@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import "../styles.css"; // Make sure this includes updated neon styles
 
 const BookList = () => {
   const [books, setBooks] = useState([]);
   const [filteredBooks, setFilteredBooks] = useState([]);
   const [message, setMessage] = useState('');
-  const [messageType, setMessageType] = useState(''); // success | error
+  const [messageType, setMessageType] = useState('');
   const [search, setSearch] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState('All');
 
-  // Fetch all books from the database
   const fetchBooks = async () => {
     try {
-  const res = await axios.get('https://api-fable-forest.onrender.com/api/books');
+      const res = await axios.get('https://api-fable-forest.onrender.com/api/books');
       setBooks(res.data);
       setFilteredBooks(res.data);
     } catch (err) {
@@ -21,7 +21,6 @@ const BookList = () => {
     }
   };
 
-  // Handle book purchase
   const handleBuy = async (bookId) => {
     try {
       const token = localStorage.getItem('token');
@@ -32,7 +31,7 @@ const BookList = () => {
       }
 
       await axios.post(
-  'https://api-fable-forest.onrender.com/api/user/buy',
+        'https://api-fable-forest.onrender.com/api/user/buy',
         { bookId },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -47,15 +46,13 @@ const BookList = () => {
       setMessage('❌ Error purchasing book');
       setMessageType('error');
     } finally {
-      // auto-hide
       setTimeout(() => {
         setMessage('');
         setMessageType('');
-      }, 4000);
+      }, 5000);
     }
   };
 
-  // Filter and search
   useEffect(() => {
     let tempBooks = [...books];
 
@@ -94,30 +91,29 @@ const BookList = () => {
   const genres = ['All', ...new Set(books.map((b) => b.genre))];
 
   return (
-    <div className="book-list">
-      <h2>📚 Book Store</h2>
+    <div className="book-list neon-bg">
+      <h2 className="neon-text">📚 Book Store</h2>
 
-      {/* Purchase message banner */}
+      {/* Floating message */}
       {message && (
-        <div className={`message ${messageType}`}>
-          <span className="sparkle" />
+        <div className={`floating-message ${messageType}`}>
           {message}
         </div>
       )}
 
       {/* Search + Filter */}
-      <div className="controls">
+      <div className="controls neon-box">
         <input
           type="text"
           placeholder="Search by title or author..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="search-input"
+          className="search-input neon-input"
         />
         <select
           value={selectedGenre}
           onChange={(e) => setSelectedGenre(e.target.value)}
-          className="genre-select"
+          className="genre-select neon-select"
         >
           {genres.map((g, i) => (
             <option key={i} value={g}>
@@ -129,7 +125,7 @@ const BookList = () => {
 
       {/* Suggestions */}
       {suggestions.length > 0 && (
-        <ul className="suggestions">
+        <ul className="suggestions neon-box">
           {suggestions.map((s) => (
             <li key={s._id} onClick={() => setSearch(s.title)}>
               {s.title} — <span className="author">{s.author}</span>
@@ -142,17 +138,17 @@ const BookList = () => {
       <div className="books-grid">
         {filteredBooks.length > 0 ? (
           filteredBooks.map((book) => (
-            <div key={book._id} className="book-card">
+            <div key={book._id} className="book-card neon-card">
               <img src={book.image} alt={book.title} className="book-image" />
-              <h4>{book.title}</h4>
-              <p><strong>Author:</strong> {book.author}</p>
-              <p><strong>Genre:</strong> {book.genre}</p>
-              <p><strong>Price:</strong> ${book.price}</p>
-              <button onClick={() => handleBuy(book._id)} className="buy-btn">🛒 Buy</button>
+              <h4 className="book-title">{book.title}</h4>
+              <p><strong>Author:</strong> <span className="highlight">{book.author}</span></p>
+              <p><strong>Genre:</strong> <span className="highlight">{book.genre}</span></p>
+              <p><strong>Price:</strong> <span className="highlight">${book.price}</span></p>
+              <button onClick={() => handleBuy(book._id)} className="buy-btn neon-btn">🛒 Buy</button>
             </div>
           ))
         ) : (
-          <p>No books found.</p>
+          <p className="no-books">No books found.</p>
         )}
       </div>
     </div>

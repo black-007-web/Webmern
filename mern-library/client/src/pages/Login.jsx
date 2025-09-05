@@ -1,8 +1,13 @@
-import React, { useEffect } from "react";
+// client/src/pages/Login.jsx
+import React, { useState, useEffect } from "react";
 import "../styles.css";
 import "particles.js";
+import axios from "axios";
 
 const Login = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
   useEffect(() => {
     // Load particles.js config
     window.particlesJS("particles-js", {
@@ -25,24 +30,45 @@ const Login = () => {
     });
   }, []);
 
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+  const res = await axios.post('https://api-fable-forest.onrender.com/api/auth/login', { email, password });
+      localStorage.setItem('token', res.data.token);
+      window.location.href = '/user'; // Redirect to user dashboard
+    } catch (err) {
+      alert('Login failed. Check email/password.');
+    }
+  };
+
   return (
     <div className="login-container">
       <div id="particles-js"></div>
       <div className="login-box">
         <h2>LOGIN</h2>
         <p>Welcome Back</p>
-        <form>
+        <form onSubmit={handleLogin}>
           <div className="input-box">
-            <label>Username</label>
-            <input type="text" required />
+            <label>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
           <div className="input-box">
             <label>Password</label>
-            <input type="password" required />
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
           <button type="submit" className="btn">Sign In</button>
           <p className="register">
-            Don’t have an account? <a href="/">Register</a>
+            Don’t have an account? <a href="/register">Register</a>
           </p>
         </form>
       </div>

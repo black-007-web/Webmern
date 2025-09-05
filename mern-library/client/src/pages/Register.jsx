@@ -11,7 +11,6 @@ const Register = () => {
   });
 
   useEffect(() => {
-    // Load particles.js config
     window.particlesJS("particles-js", {
       particles: {
         number: { value: 80, density: { enable: true, value_area: 800 } },
@@ -39,7 +38,10 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-  const res = await axios.post("https://api-fable-forest.onrender.com/api/auth/register", form);
+      const res = await axios.post(
+        "https://api-fable-forest.onrender.com/api/auth/register",
+        form
+      );
       localStorage.setItem("token", res.data.token);
       alert("Registration successful!");
       window.location.href = "/user";
@@ -55,62 +57,99 @@ const Register = () => {
       <div
         className="login-box"
         style={{
-          width: "320px", // same width as AdminLogin
-          padding: "25px 20px", // reduce padding to compress height
+          width: "320px",
+          padding: "25px 20px",
+          background: "transparent",
+          border: "1px solid #00ffff",
+          borderRadius: "10px",
+          boxShadow: "0 0 15px rgba(0, 255, 255, 0.5)",
         }}
       >
         <h2 style={{ fontSize: "24px", marginBottom: "6px", color: "#00ffff" }}>
           REGISTER
         </h2>
-        <p style={{ fontSize: "12px", marginBottom: "15px", color: "#fff" }}>
+        <p style={{ fontSize: "12px", marginBottom: "15px", color: "#888" }}>
           Create your account
         </p>
         <form onSubmit={handleRegister}>
           <div className="input-box" style={{ marginBottom: "12px" }}>
-            <label style={{ fontSize: "12px", color: "#00ffff" }}>Full Name</label>
+            <label style={{ fontSize: "12px", color: "#888" }}>Full Name</label>
             <input
               type="text"
               name="name"
               value={form.name}
               onChange={handleChange}
               required
-              style={{ padding: "6px 8px", fontSize: "12px" }}
+              style={{
+                padding: "6px 8px",
+                fontSize: "12px",
+                background: "transparent",
+                border: "1px solid #00ffff",
+                color: "#fff",
+                outline: "none",
+              }}
             />
           </div>
           <div className="input-box" style={{ marginBottom: "12px" }}>
-            <label style={{ fontSize: "12px", color: "#00ffff" }}>Email Address</label>
+            <label style={{ fontSize: "12px", color: "#888" }}>Email Address</label>
             <input
               type="email"
               name="email"
               value={form.email}
               onChange={handleChange}
               required
-              style={{ padding: "6px 8px", fontSize: "12px" }}
+              style={{
+                padding: "6px 8px",
+                fontSize: "12px",
+                background: "transparent",
+                border: "1px solid #00ffff",
+                color: "#fff",
+                outline: "none",
+              }}
             />
           </div>
           <div className="input-box" style={{ marginBottom: "12px" }}>
-            <label style={{ fontSize: "12px", color: "#00ffff" }}>Password</label>
+            <label style={{ fontSize: "12px", color: "#888" }}>Password</label>
             <input
               type="password"
               name="password"
               value={form.password}
               onChange={handleChange}
               required
-              style={{ padding: "6px 8px", fontSize: "12px" }}
+              style={{
+                padding: "6px 8px",
+                fontSize: "12px",
+                background: "transparent",
+                border: "1px solid #00ffff",
+                color: "#fff",
+                outline: "none",
+              }}
             />
           </div>
           <button
             type="submit"
             className="btn"
-            style={{ padding: "8px", fontSize: "13px", width: "100%" }}
+            style={{
+              padding: "8px",
+              fontSize: "13px",
+              width: "100%",
+              background: "#00ffff",
+              color: "#000",
+              border: "none",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
           >
             Sign Up
           </button>
           <p
             className="register"
-            style={{ marginTop: "10px", fontSize: "12px", color: "#fff" }}
+            style={{ marginTop: "10px", fontSize: "12px", color: "#666" }}
           >
-            Already have an account? <a href="/login">Login here</a>
+            Already have an account?{" "}
+            <a href="/login" style={{ color: "#00ffff" }}>
+              Login here
+            </a>
           </p>
         </form>
       </div>

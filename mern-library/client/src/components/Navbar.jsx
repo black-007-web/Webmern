@@ -1,5 +1,7 @@
+// Frontend/components/Navbar.jsx
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import "../styles.css"; // Ensure neon styles are applied
 
 const Navbar = () => {
   const token = localStorage.getItem('token');
@@ -13,29 +15,29 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar">
+    <nav className="navbar neon-nav">
       <div className="navbar-title">
-        <h2>📚 Library System</h2>
+        <h2 className="neon-text">📚 Library System</h2>
       </div>
       <div className="nav-links">
-        <Link to="/">🏠 Home</Link>
-        <Link to="/booklist">📖 Books</Link>
+        <Link className="neon-link" to="/">🏠 Home</Link>
+        <Link className="neon-link" to="/booklist">📖 Books</Link>
 
         {adminToken ? (
           <>
-            <Link to="/admin-dashboard">🛠 Admin</Link>
-            <button onClick={handleLogout}>🚪 Logout</button>
+            <Link className="neon-link" to="/admin-dashboard">🛠 Admin</Link>
+            <button className="neon-btn logout-btn" onClick={handleLogout}>🚪 Logout</button>
           </>
         ) : token ? (
           <>
-            <Link to="/user">👤 Profile</Link>
-            <button onClick={handleLogout}>🚪 Logout</button>
+            <Link className="neon-link" to="/user">👤 Profile</Link>
+            <button className="neon-btn logout-btn" onClick={handleLogout}>🚪 Logout</button>
           </>
         ) : (
           <>
-            <Link to="/login">🔐 Login</Link>
-            <Link to="/register">📝 Register</Link>
-            <Link to="/admin-login">🛠 Admin Login</Link>
+            <Link className="neon-link" to="/login">🔐 Login</Link>
+            <Link className="neon-link" to="/register">📝 Register</Link>
+            <Link className="neon-link" to="/admin-login">🛠 Admin Login</Link>
           </>
         )}
       </div>
