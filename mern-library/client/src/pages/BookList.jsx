@@ -13,7 +13,7 @@ const BookList = () => {
   // Fetch all books from the database
   const fetchBooks = async () => {
     try {
-  const res = await axios.get('/api/books');
+  const res = await axios.get('https://api-fable-forest.onrender.com/api/books');
       setBooks(res.data);
       setFilteredBooks(res.data);
     } catch (err) {
@@ -32,7 +32,7 @@ const BookList = () => {
       }
 
       await axios.post(
-  '/api/user/buy',
+  'https://api-fable-forest.onrender.com/api/user/buy',
         { bookId },
         {
           headers: { Authorization: `Bearer ${token}` },

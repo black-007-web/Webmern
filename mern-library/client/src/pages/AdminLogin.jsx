@@ -34,7 +34,7 @@ const AdminLogin = () => {
   const handleAdminLogin = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("/api/admin/login", { email, password });
+  const res = await axios.post("https://api-fable-forest.onrender.com/api/admin/login", { email, password });
       localStorage.setItem("adminToken", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.admin));
       navigate("/admin");

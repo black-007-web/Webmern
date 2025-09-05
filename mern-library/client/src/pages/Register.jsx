@@ -39,7 +39,7 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("/api/auth/register", form);
+  const res = await axios.post("https://api-fable-forest.onrender.com/api/auth/register", form);
       localStorage.setItem("token", res.data.token);
       alert("Registration successful!");
       window.location.href = "/user";
