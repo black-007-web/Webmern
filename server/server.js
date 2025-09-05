@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 
 const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes.js');
+const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const bookRoutes = require('./routes/userBooks');
 const bookReadRoutes = require('./routes/bookReadRoutes'); // ✅ Read purchased book
@@ -24,9 +24,9 @@ app.use(express.json());
 // Serve uploaded files statically
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Root route
+// Root route: serve index.html directly from server folder
 app.get('/', (req, res) => {
-  res.send('📚 API is running...');
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // API Routes

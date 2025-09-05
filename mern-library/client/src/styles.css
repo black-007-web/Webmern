@@ -952,3 +952,457 @@ form button:hover {
   cursor: pointer;
 }
 .buy-btn:hover { background: #005fcc; }
+
+
+/* Import Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700&family=Poppins:wght@300;400;500&display=swap');
+
+/* Background Particles */
+#particles-js {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+/* Login Container */
+.login-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(135deg, #000 0%, #0a0a0f 50%, #111 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Login Box */
+.login-box {
+  position: relative;
+  z-index: 2;
+  background: rgba(10, 10, 15, 0.9); /* Darker semi-transparent */
+  padding: 40px;
+  border-radius: 15px;
+  border: 1px solid cyan;
+  box-shadow: 0 0 25px cyan, 0 0 50px rgba(0, 255, 255, 0.3);
+  width: 360px;
+  text-align: center;
+  color: #ddd; /* Softer gray */
+  transition: 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+.login-box:hover {
+  box-shadow: 0 0 40px cyan, 0 0 80px rgba(0, 255, 255, 0.6);
+  transform: translateY(-5px);
+}
+
+.login-box h2 {
+  margin: 0 0 10px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  font-family: 'Orbitron', sans-serif; /* Futuristic font */
+  color: #0ff; /* Neon cyan */
+  text-shadow: 0 0 15px cyan, 0 0 30px rgba(0, 255, 255, 0.5);
+}
+
+.login-box p {
+  margin-bottom: 20px;
+  font-size: 15px;
+  color: #999;
+  font-weight: 300;
+}
+
+/* Input Box */
+.input-box {
+  position: relative;
+  margin: 20px 0;
+  text-align: left;
+}
+
+.input-box label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #555; /* Darker gray labels */
+  letter-spacing: 1px;
+}
+
+.input-box input {
+  width: 100%;
+  padding: 12px;
+  background: #0d0d12; /* Darker input background */
+  border: 1px solid cyan;
+  outline: none;
+  color: #0ff; /* Cyan input text */
+  font-size: 16px;
+  border-radius: 6px;
+  transition: 0.3s;
+  font-family: 'Poppins', sans-serif;
+}
+
+.input-box input:focus {
+  border-color: #ff4dff; /* Neon pink glow */
+  box-shadow: 0 0 12px #ff4dff;
+}
+
+/* Button */
+.btn {
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 1px solid cyan;
+  border-radius: 25px;
+  color: #0ff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.4s;
+  margin-top: 15px;
+  font-family: 'Orbitron', sans-serif;
+  letter-spacing: 1px;
+}
+
+.btn:hover {
+  background: cyan;
+  color: #000;
+  box-shadow: 0 0 25px cyan, 0 0 50px cyan;
+  transform: scale(1.07);
+}
+
+/* Register link */
+.register {
+  margin-top: 15px;
+  font-size: 13px;
+  color: #aaa;
+  font-family: 'Poppins', sans-serif;
+}
+
+.register a {
+  color: #ff4dff; /* Neon pink */
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.register a:hover {
+  text-decoration: underline;
+  color: #ff80ff;
+  text-shadow: 0 0 10px #ff80ff;
+}
+/* User Dashboard Neon Cyberpunk Styles */
+
+.user-dashboard {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px 0;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#particles-js {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.user-container {
+  position: relative;
+  z-index: 2;
+  width: 90%;
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.neon-box {
+  background: rgba(0, 0, 0, 0.85);
+  padding: 20px 25px;
+  border-radius: 12px;
+  border: 1px solid #00ffff;
+  box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+}
+
+.user-info h2,
+.user-books h3 {
+  margin: 0 0 10px;
+  color: #00ffff;
+  text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
+  font-size: 22px;
+}
+
+.user-info p,
+.user-books p {
+  margin: 0;
+  font-size: 14px;
+  color: #fff;
+}
+
+.book-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.book-item.neon-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0,0,0,0.9);
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: 1px solid #00ffff;
+  box-shadow: 0 0 8px #00ffff, 0 0 16px #00ffff;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+
+.book-item.neon-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 12px #00ffff, 0 0 24px #00ffff;
+}
+
+.book-details h4 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  color: #00ffff;
+}
+
+.book-details p {
+  margin: 0;
+  font-size: 13px;
+  color: #fff;
+}
+
+.book-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.neon-btn {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background: #00ffff;
+  color: #000;
+  font-weight: bold;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
+  transition: 0.3s;
+}
+
+.neon-btn:hover {
+  background: #00cccc;
+  box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+}
+
+.user-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+  color: #00ffff;
+  text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .user-container {
+    width: 95%;
+  }
+  .book-item.neon-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .book-actions {
+    margin-top: 8px;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+/* Neon Cyberpunk Styles with Pulse Animation */
+
+.user-dashboard {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px 0;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#particles-js {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.user-container {
+  position: relative;
+  z-index: 2;
+  width: 90%;
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Neon boxes with pulse animation */
+.neon-box {
+  background: rgba(0, 0, 0, 0.85);
+  padding: 20px 25px;
+  border-radius: 12px;
+  border: 1px solid #00ffff;
+  box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+  animation: neonPulse 2s infinite alternate;
+}
+
+@keyframes neonPulse {
+  0% {
+    box-shadow: 0 0 8px #00ffff, 0 0 16px #00ffff;
+  }
+  50% {
+    box-shadow: 0 0 14px #00ffff, 0 0 28px #00ffff;
+  }
+  100% {
+    box-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+  }
+}
+
+/* Headings */
+.user-info h2,
+.user-books h3 {
+  margin: 0 0 10px;
+  color: #00ffff;
+  text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
+  font-size: 22px;
+}
+
+.user-info p,
+.user-books p {
+  margin: 0;
+  font-size: 14px;
+  color: #fff;
+}
+
+/* Book list */
+.book-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Individual book card with pulse */
+.book-item.neon-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(0,0,0,0.9);
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: 1px solid #00ffff;
+  box-shadow: 0 0 8px #00ffff, 0 0 16px #00ffff;
+  transition: transform 0.2s, box-shadow 0.3s;
+  animation: neonPulse 2s infinite alternate;
+}
+
+.book-item.neon-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 20px #00ffff, 0 0 40px #00ffff;
+}
+
+/* Book details */
+.book-details h4 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  color: #00ffff;
+}
+
+.book-details p {
+  margin: 0;
+  font-size: 13px;
+  color: #fff;
+}
+
+/* Action buttons with glow pulse */
+.book-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.neon-btn {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background: #00ffff;
+  color: #000;
+  font-weight: bold;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
+  transition: 0.3s;
+  animation: neonBtnPulse 2s infinite alternate;
+}
+
+.neon-btn:hover {
+  background: #00cccc;
+  box-shadow: 0 0 12px #00ffff, 0 0 24px #00ffff;
+}
+
+/* Button pulse animation */
+@keyframes neonBtnPulse {
+  0% {
+    box-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
+  }
+  50% {
+    box-shadow: 0 0 12px #00ffff, 0 0 24px #00ffff;
+  }
+  100% {
+    box-shadow: 0 0 8px #00ffff, 0 0 16px #00ffff;
+  }
+}
+
+.user-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+  color: #00ffff;
+  text-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .user-container {
+    width: 95%;
+  }
+  .book-item.neon-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .book-actions {
+    margin-top: 8px;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
