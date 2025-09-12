@@ -1,4 +1,3 @@
-// Backend/controllers/bookController.js
 const path = require('path');
 const fs = require('fs');
 const Book = require('../models/Book');
@@ -28,7 +27,6 @@ exports.readBook = async (req, res) => {
     const book = await Book.findById(bookId);
     if (!book) return res.status(404).json({ message: "Book not found" });
 
-    // Check if the PDF file exists on the server
     const pdfPath = path.join(__dirname, '..', book.pdfUrl || '');
     if (!book.pdfUrl || !fs.existsSync(pdfPath)) {
       return res.status(404).json({ message: "PDF file not found" });
@@ -50,20 +48,26 @@ exports.createBook = async (req, res) => {
       return res.status(400).json({ message: "PDF file is required" });
     }
 
-    const imageFile = req.files?.image ? req.files.image[0] : null;
+    const imageFile = req.files?.image?.[0] || null;
     const pdfFile = req.files.pdf[0];
+
+    const imageUrl = imageFile
+      ? `${req.protocol}://${req.get('host')}/uploads/images/${imageFile.filename}`
+      : null;
+
+    const pdfUrl = `${req.protocol}://${req.get('host')}/uploads/pdfs/${pdfFile.filename}`;
 
     const newBook = new Book({
       title,
       author,
       genre,
       price,
-      image: imageFile ? `/uploads/images/${imageFile.filename}` : null,
-      pdfUrl: `/uploads/pdfs/${pdfFile.filename}`,
+      image: imageUrl,
+      pdfUrl: pdfUrl,
     });
 
     await newBook.save();
-    console.log(`Book created: ${newBook.title}, PDF: ${newBook.pdfUrl}`);
+    console.log(`✅ Book created: ${newBook.title}`);
     res.status(201).json(newBook);
   } catch (error) {
     console.error("Error in createBook:", error.message);
@@ -78,17 +82,19 @@ exports.deleteBook = async (req, res) => {
     if (!book) return res.status(404).json({ message: "Book not found" });
 
     // Delete files
-    if (book.image) {
-      const imagePath = path.join(__dirname, '..', book.image);
-      if (fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
-    }
-    if (book.pdfUrl) {
-      const pdfPath = path.join(__dirname, '..', book.pdfUrl);
-      if (fs.existsSync(pdfPath)) fs.unlinkSync(pdfPath);
-    }
+    const imagePath = book.image?.startsWith('http')
+      ? null
+      : path.join(__dirname, '..', book.image || '');
+
+    const pdfPath = book.pdfUrl?.startsWith('http')
+      ? null
+      : path.join(__dirname, '..', book.pdfUrl || '');
+
+    if (imagePath && fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
+    if (pdfPath && fs.existsSync(pdfPath)) fs.unlinkSync(pdfPath);
 
     await book.deleteOne();
-    res.json({ message: `Book "${book.title}" deleted successfully` });
+    res.json({ message: `🗑 Book "${book.title}" deleted successfully` });
   } catch (error) {
     console.error("Error deleting book:", error.message);
     res.status(500).json({ message: "Server error while deleting book" });
