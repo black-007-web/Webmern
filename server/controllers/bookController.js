@@ -27,9 +27,8 @@ exports.readBook = async (req, res) => {
     const book = await Book.findById(bookId);
     if (!book) return res.status(404).json({ message: "Book not found" });
 
-    const pdfPath = path.join(__dirname, '..', book.pdfUrl || '');
-    if (!book.pdfUrl || !fs.existsSync(pdfPath)) {
-      return res.status(404).json({ message: "PDF file not found" });
+    if (!book.pdfUrl) {
+      return res.status(404).json({ message: "PDF URL not available" });
     }
 
     res.json({ title: book.title, pdfUrl: book.pdfUrl });
@@ -81,7 +80,6 @@ exports.deleteBook = async (req, res) => {
     const book = await Book.findById(req.params.bookId);
     if (!book) return res.status(404).json({ message: "Book not found" });
 
-    // Delete files
     const imagePath = book.image?.startsWith('http')
       ? null
       : path.join(__dirname, '..', book.image || '');
@@ -100,3 +98,4 @@ exports.deleteBook = async (req, res) => {
     res.status(500).json({ message: "Server error while deleting book" });
   }
 };
+
