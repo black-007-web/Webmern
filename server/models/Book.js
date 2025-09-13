@@ -1,4 +1,3 @@
-// Backend/models/Book.js
 const mongoose = require('mongoose');
 
 const bookSchema = new mongoose.Schema(
@@ -23,11 +22,11 @@ const bookSchema = new mongoose.Schema(
       min: 0,
     },
     image: {
-      type: String, // 📸 Full image URL
+      type: String, // 📸 Full image URL (e.g., https://yourdomain.com/uploads/images/filename.jpg)
       required: true,
     },
     pdfUrl: {
-      type: String, // 📕 Full PDF URL
+      type: String, // 📕 Full PDF URL (e.g., https://yourdomain.com/uploads/pdfs/filename.pdf)
       required: true,
     },
   },
@@ -35,3 +34,4 @@ const bookSchema = new mongoose.Schema(
 );
 
 module.exports = mongoose.model('Book', bookSchema);
+
