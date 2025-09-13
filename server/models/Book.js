@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const path = require('path');
+const fs = require('fs');
 
 const bookSchema = new mongoose.Schema(
   {
@@ -22,16 +24,45 @@ const bookSchema = new mongoose.Schema(
       min: 0,
     },
     image: {
-      type: String, // 📸 Full image URL (e.g., https://yourdomain.com/uploads/images/filename.jpg)
+      type: String,
       required: true,
+      validate: {
+        validator: function (v) {
+          return /^https?:\/\/.+\.(jpg|jpeg|png|webp|gif)$/.test(v);
+        },
+        message: props => `${props.value} is not a valid image URL`,
+      },
     },
     pdfUrl: {
-      type: String, // 📕 Full PDF URL (e.g., https://yourdomain.com/uploads/pdfs/filename.pdf)
+      type: String,
       required: true,
+      validate: {
+        validator: function (v) {
+          return /^https?:\/\/.+\.pdf$/.test(v);
+        },
+        message: props => `${props.value} is not a valid PDF URL`,
+      },
     },
   },
   { timestamps: true }
 );
 
+// 🔍 Virtuals for filename extraction
+bookSchema.virtual('pdfFilename').get(function () {
+  return this.pdfUrl?.split('/').pop();
+});
+
+bookSchema.virtual('imageFilename').get(function () {
+  return this.image?.split('/').pop();
+});
+
+// 🧪 Optional method to check if PDF exists on server
+bookSchema.methods.pdfExistsOnServer = function () {
+  const filename = this.pdfFilename;
+  const filePath = path.join(__dirname, '..', 'uploads/pdfs', filename);
+  return fs.existsSync(filePath);
+};
+
 module.exports = mongoose.model('Book', bookSchema);
+
 
