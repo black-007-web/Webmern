@@ -3,6 +3,8 @@ const fs = require('fs');
 const Book = require('../models/Book');
 const User = require('../models/User');
 
+const BASE_URL = process.env.BASE_URL || 'https://api-fable-forest.onrender.com';
+
 // 📚 Get all books
 exports.getAllBooks = async (req, res) => {
   try {
@@ -51,10 +53,10 @@ exports.createBook = async (req, res) => {
     const pdfFile = req.files.pdf[0];
 
     const imageUrl = imageFile
-      ? `${req.protocol}://${req.get('host')}/uploads/images/${imageFile.filename}`
+      ? `${BASE_URL}/uploads/images/${imageFile.filename}`
       : null;
 
-    const pdfUrl = `${req.protocol}://${req.get('host')}/uploads/pdfs/${pdfFile.filename}`;
+    const pdfUrl = `${BASE_URL}/uploads/pdfs/${pdfFile.filename}`;
 
     const newBook = new Book({
       title,
@@ -80,13 +82,16 @@ exports.deleteBook = async (req, res) => {
     const book = await Book.findById(req.params.bookId);
     if (!book) return res.status(404).json({ message: "Book not found" });
 
-    const imagePath = book.image?.startsWith('http')
-      ? null
-      : path.join(__dirname, '..', book.image || '');
+    const imageFilename = book.image?.split('/').pop();
+    const pdfFilename = book.pdfUrl?.split('/').pop();
 
-    const pdfPath = book.pdfUrl?.startsWith('http')
-      ? null
-      : path.join(__dirname, '..', book.pdfUrl || '');
+    const imagePath = imageFilename
+      ? path.join(__dirname, '..', 'uploads/images', imageFilename)
+      : null;
+
+    const pdfPath = pdfFilename
+      ? path.join(__dirname, '..', 'uploads/pdfs', pdfFilename)
+      : null;
 
     if (imagePath && fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
     if (pdfPath && fs.existsSync(pdfPath)) fs.unlinkSync(pdfPath);
@@ -98,4 +103,3 @@ exports.deleteBook = async (req, res) => {
     res.status(500).json({ message: "Server error while deleting book" });
   }
 };
-
