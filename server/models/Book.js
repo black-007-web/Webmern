@@ -23,17 +23,15 @@ const bookSchema = new mongoose.Schema(
       min: 0,
     },
     image: {
-      type: String, // 📸 cover image URL (stored by multer)
+      type: String, // 📸 Full image URL
       required: true,
     },
     pdfUrl: {
-      type: String, // 📕 PDF file URL (stored by multer)
+      type: String, // 📕 Full PDF URL
       required: true,
     },
   },
   { timestamps: true }
 );
 
-const Book = mongoose.model('Book', bookSchema);
-
-module.exports = Book;
+module.exports = mongoose.model('Book', bookSchema);
