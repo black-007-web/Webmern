@@ -56,13 +56,10 @@ bookSchema.virtual('imageFilename').get(function () {
   return this.image?.split('/').pop();
 });
 
-// 🧪 Optional method to check if PDF exists on server
+// 🧪 Deprecated: Local file check (not used with Cloudinary)
 bookSchema.methods.pdfExistsOnServer = function () {
-  const filename = this.pdfFilename;
-  const filePath = path.join(__dirname, '..', 'uploads/pdfs', filename);
-  return fs.existsSync(filePath);
+  return false; // Cloudinary files are not stored locally
 };
 
 module.exports = mongoose.model('Book', bookSchema);
-
 
