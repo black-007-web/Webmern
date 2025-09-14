@@ -1,10 +1,8 @@
-// Backend/server.js
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const path = require('path');
-const fs = require('fs');
 
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -21,23 +19,6 @@ const PORT = process.env.PORT || 5000;
 // Middleware
 app.use(cors());
 app.use(express.json());
-
-// 🔓 Serve uploaded files statically
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// 🧪 Debug route to check if a PDF exists
-app.get('/api/debug-pdf/:filename', (req, res) => {
-  const filePath = path.join(__dirname, 'uploads/pdfs', req.params.filename);
-  const exists = fs.existsSync(filePath);
-  res.json({ exists });
-});
-
-// 📤 Optional: Stream PDF directly (alternative to static serving)
-app.get('/api/stream/:filename', (req, res) => {
-  const filePath = path.join(__dirname, 'uploads/pdfs', req.params.filename);
-  if (!fs.existsSync(filePath)) return res.status(404).send('File not found');
-  res.sendFile(filePath);
-});
 
 // 🌐 Root route
 app.get('/', (req, res) => {
@@ -64,4 +45,3 @@ mongoose
   .catch((err) => {
     console.error('❌ Failed to connect to MongoDB:', err.message);
   });
-
