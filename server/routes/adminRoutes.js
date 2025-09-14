@@ -1,4 +1,3 @@
-// Backend/routes/adminRoutes.js
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
@@ -9,25 +8,11 @@ const {
 } = require('../controllers/adminController');
 const { createBook } = require('../controllers/bookController');
 const { adminProtect } = require('../middleware/adminMiddleware');
+const { storage } = require('../config/cloudinary'); // ⬅️ Cloudinary storage
 
 const router = express.Router();
 
-// ✅ Multer setup for file uploads (image + pdf)
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    if (file.mimetype.startsWith('image/')) {
-      cb(null, 'uploads/images'); // cover images folder
-    } else if (file.mimetype === 'application/pdf') {
-      cb(null, 'uploads/pdfs'); // pdfs folder
-    } else {
-      cb(new Error('Only images and PDFs are allowed'), false);
-    }
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // unique file names
-  },
-});
-
+// ✅ Multer setup using Cloudinary storage engine
 const upload = multer({ storage });
 
 // 🔑 Login route
@@ -48,7 +33,7 @@ router.get('/me', adminProtect, (req, res) => {
 router.get('/users', adminProtect, getAllUsers);
 router.delete('/users/:id', adminProtect, deleteUser);
 
-// 📚 Create a new book (with file upload)
+// 📚 Create a new book (with file upload to Cloudinary)
 router.post(
   '/books',
   adminProtect,
