@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const Book = require('../models/Book');
 const User = require('../models/User');
+const { cloudinary } = require('../config/cloudinary');
 
 const BASE_URL = process.env.BASE_URL || 'https://api-fable-forest.onrender.com';
 
@@ -40,7 +41,7 @@ exports.readBook = async (req, res) => {
   }
 };
 
-// 📝 Admin: Create a new book
+// 📝 Admin: Create a new book (Cloudinary version)
 exports.createBook = async (req, res) => {
   try {
     const { title, author, genre, price } = req.body;
@@ -52,19 +53,27 @@ exports.createBook = async (req, res) => {
     const imageFile = req.files?.image?.[0] || null;
     const pdfFile = req.files.pdf[0];
 
-    const imageUrl = imageFile
-      ? `${BASE_URL}/uploads/images/${imageFile.filename}`
-      : null;
+    // Upload to Cloudinary
+    const pdfUpload = await cloudinary.uploader.upload(pdfFile.path, {
+      resource_type: 'raw',
+      folder: 'mern-library/pdfs',
+    });
 
-    const pdfUrl = `${BASE_URL}/uploads/pdfs/${pdfFile.filename}`;
+    let imageUpload = null;
+    if (imageFile) {
+      imageUpload = await cloudinary.uploader.upload(imageFile.path, {
+        resource_type: 'image',
+        folder: 'mern-library/images',
+      });
+    }
 
     const newBook = new Book({
       title,
       author,
       genre,
       price,
-      image: imageUrl,
-      pdfUrl: pdfUrl,
+      image: imageUpload?.secure_url || null,
+      pdfUrl: pdfUpload.secure_url,
     });
 
     await newBook.save();
