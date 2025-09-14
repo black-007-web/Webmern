@@ -1,37 +1,22 @@
-// Backend/middleware/uploadMiddleware.js
 const multer = require("multer");
-const path = require("path");
+const { storage } = require("../config/cloudinary");
 
-// Storage for PDFs
-const pdfStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/books/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname)); // unique filename
-  },
-});
-
-// Storage for Images
-const imageStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/images/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
-
-// File filter (only PDF for books, only image for covers)
+// File filter (optional, still useful for validation)
 const fileFilter = (req, file, cb) => {
-  if (file.mimetype.startsWith("image/") || file.mimetype === "application/pdf") {
+  if (
+    file.mimetype.startsWith("image/") ||
+    file.mimetype === "application/pdf"
+  ) {
     cb(null, true);
   } else {
     cb(new Error("Invalid file type. Only images and PDFs allowed!"), false);
   }
 };
 
-const upload = multer({ storage: pdfStorage, fileFilter });
-const uploadImage = multer({ storage: imageStorage, fileFilter });
+// Upload middleware using Cloudinary storage
+const upload = multer({ storage, fileFilter }).fields([
+  { name: "image", maxCount: 1 },
+  { name: "pdf", maxCount: 1 },
+]);
 
-module.exports = { upload, uploadImage };
+module.exports = { upload };
