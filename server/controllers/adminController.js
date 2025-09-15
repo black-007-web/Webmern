@@ -4,8 +4,8 @@ const User = require('../models/User');
 const Book = require('../models/Book');
 const generateToken = require('../utils/generateToken');
 
-// 🔒 Hardcoded backend base URL
-const BASE_URL = 'https://api-fable-forest.onrender.com';
+// Delegate book creation to bookController
+const { createBook: cloudinaryCreateBook } = require('./bookController');
 
 // 🔐 Admin login
 exports.loginAdmin = async (req, res) => {
@@ -31,7 +31,7 @@ exports.loginAdmin = async (req, res) => {
   }
 };
 
-// 👥 Get all users (for admin dashboard)
+// 👥 Get all users
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find({}).select('-password');
@@ -56,37 +56,12 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
-// 📘 Create a new book (Admin only) with image + PDF upload
+// 📘 Create a new book (Admin only) → delegate to bookController
 exports.createBook = async (req, res) => {
   try {
-    const { title, author, genre, price } = req.body;
-    const imageFile = req.files?.image ? req.files.image[0] : null;
-    const pdfFile = req.files?.pdf ? req.files.pdf[0] : null;
-
-    if (!title || !author || !genre || !price || !imageFile || !pdfFile) {
-      return res.status(400).json({
-        message: 'All fields (title, author, genre, price, image, PDF) are required'
-      });
-    }
-
-    const imageUrl = `${BASE_URL}/uploads/images/${imageFile.filename}`;
-    const pdfUrl = `${BASE_URL}/uploads/pdfs/${pdfFile.filename}`;
-
-    console.log("📎 Saved PDF URL:", pdfUrl);
-
-    const book = await Book.create({
-      title,
-      author,
-      genre,
-      price,
-      image: imageUrl,
-      pdfUrl: pdfUrl,
-    });
-
-    res.status(201).json(book);
+    await cloudinaryCreateBook(req, res);
   } catch (error) {
-    console.error('Error creating book:', error.message);
-    res.status(500).json({ message: 'Server error while creating book' });
+    console.error("Admin createBook error:", error.message);
+    res.status(500).json({ message: "Server error in admin createBook" });
   }
 };
-
