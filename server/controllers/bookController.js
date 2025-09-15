@@ -1,8 +1,5 @@
-const path = require('path');
-const fs = require('fs');
 const Book = require('../models/Book');
 const User = require('../models/User');
-const { cloudinary } = require('../config/cloudinary');
 
 // 📚 Get all books
 exports.getAllBooks = async (req, res) => {
@@ -39,7 +36,7 @@ exports.readBook = async (req, res) => {
   }
 };
 
-// 📝 Admin: Create a new book (Cloudinary version)
+// 📝 Admin: Create a new book (Cloudinary integrated correctly)
 exports.createBook = async (req, res) => {
   try {
     const { title, author, genre, price } = req.body;
@@ -55,18 +52,11 @@ exports.createBook = async (req, res) => {
       return res.status(400).json({ message: "PDF file is required" });
     }
 
-    // Upload PDF to Cloudinary
-    const pdfUpload = await cloudinary.uploader.upload(pdfFile.path, {
-      resource_type: 'raw',
-      folder: 'mern-library/pdfs',
-    });
+    const pdfUrl = pdfFile.path || pdfFile.location || pdfFile.secure_url;
+    const imageUrl = imageFile ? (imageFile.path || imageFile.location || imageFile.secure_url) : null;
 
-    let imageUpload = null;
-    if (imageFile) {
-      imageUpload = await cloudinary.uploader.upload(imageFile.path, {
-        resource_type: 'image',
-        folder: 'mern-library/images',
-      });
+    if (!pdfUrl) {
+      return res.status(500).json({ message: "PDF upload URL missing" });
     }
 
     const newBook = new Book({
@@ -74,8 +64,8 @@ exports.createBook = async (req, res) => {
       author,
       genre,
       price,
-      image: imageUpload?.secure_url || null,
-      pdfUrl: pdfUpload.secure_url,
+      image: imageUrl,
+      pdfUrl: pdfUrl,
     });
 
     await newBook.save();
@@ -88,13 +78,14 @@ exports.createBook = async (req, res) => {
   }
 };
 
-// 🗑 Delete a book (Admin only)
+// 🗑 Delete a book (improved, with optional Cloudinary cleanup if needed)
 exports.deleteBook = async (req, res) => {
   try {
     const book = await Book.findById(req.params.bookId);
     if (!book) return res.status(404).json({ message: "Book not found" });
 
-    // Optionally delete from Cloudinary if needed
+    // Optionally delete associated files from Cloudinary here if desired
+    // Example: await cloudinary.uploader.destroy(public_id);
 
     await book.deleteOne();
     res.json({ message: `🗑 Book "${book.title}" deleted successfully` });
