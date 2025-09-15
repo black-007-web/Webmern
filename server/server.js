@@ -6,10 +6,9 @@ const path = require('path');
 
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
-const adminRoutes = require('./routes/adminRoutes');
+const adminRoutes = require('./routes/adminRoutes'); // includes book routes now
 const bookRoutes = require('./routes/userBooks');
 const bookReadRoutes = require('./routes/bookReadRoutes');
-// const adminBookRoutes = require('./routes/adminBookRoutes'); // ❌ Removed to fix 505
 
 dotenv.config();
 
@@ -20,26 +19,26 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// 🌐 Root route
+// Root route
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// 📚 API Routes
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api/admin', adminRoutes); // Handles admin + book creation
-// app.use('/api/admin/books', adminBookRoutes); // ❌ Removed duplicate route
+app.use('/api/admin', adminRoutes); // Admin + book routes combined here
+
 app.use('/api/books', bookRoutes);
 app.use('/api/read', bookReadRoutes);
 
-// 🛑 Global error handler
+// Global error handler
 app.use((err, req, res, next) => {
   console.error('🔥 Unhandled error:', err);
   res.status(500).json({ message: 'Internal Server Error', details: err.message });
 });
 
-// 🔗 MongoDB connection
+// MongoDB connection and server start
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
