@@ -5,16 +5,16 @@ const { createBook, deleteBook } = require('../controllers/bookController');
 const multer = require('multer');
 const { storage } = require('../config/cloudinary');
 
-// ✅ Cloudinary-based upload middleware
+// Multer middleware with Cloudinary storage for image and pdf
 const upload = multer({ storage }).fields([
   { name: 'image', maxCount: 1 },
   { name: 'pdf', maxCount: 1 },
 ]);
 
-// 📘 Admin creates book
+// Route to create a new book (admin only)
 router.post('/', adminProtect, upload, createBook);
 
-// 🗑 Admin deletes book
+// Route to delete a book by ID (admin only)
 router.delete('/:bookId', adminProtect, deleteBook);
 
 module.exports = router;
