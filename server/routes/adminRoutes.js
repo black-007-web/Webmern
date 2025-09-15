@@ -1,18 +1,17 @@
 const express = require('express');
 const multer = require('multer');
-const path = require('path');
 const {
   loginAdmin,
   getAllUsers,
   deleteUser,
+  createBook, // ⬅️ Use adminController which delegates to bookController
 } = require('../controllers/adminController');
-const { createBook } = require('../controllers/bookController');
 const { adminProtect } = require('../middleware/adminMiddleware');
-const { storage } = require('../config/cloudinary'); // ⬅️ Cloudinary storage
+const { storage } = require('../config/cloudinary');
 
 const router = express.Router();
 
-// ✅ Multer setup using Cloudinary storage engine
+// Multer setup using Cloudinary storage engine
 const upload = multer({ storage });
 
 // 🔑 Login route
@@ -33,7 +32,7 @@ router.get('/me', adminProtect, (req, res) => {
 router.get('/users', adminProtect, getAllUsers);
 router.delete('/users/:id', adminProtect, deleteUser);
 
-// 📚 Create a new book (with file upload to Cloudinary)
+// 📚 Create a new book (with Cloudinary upload)
 router.post(
   '/books',
   adminProtect,
