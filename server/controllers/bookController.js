@@ -12,7 +12,7 @@ exports.getAllBooks = async (req, res) => {
     const books = await Book.find({});
     res.json(books);
   } catch (error) {
-    console.error("Error fetching books:", error.message);
+    console.error("Error fetching books:", error);
     res.status(500).json({ message: 'Error fetching books' });
   }
 };
@@ -36,7 +36,7 @@ exports.readBook = async (req, res) => {
 
     res.json({ title: book.title, pdfUrl: book.pdfUrl });
   } catch (error) {
-    console.error("Error in readBook:", error.message);
+    console.error("Error in readBook:", error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -45,6 +45,10 @@ exports.readBook = async (req, res) => {
 exports.createBook = async (req, res) => {
   try {
     const { title, author, genre, price } = req.body;
+
+    if (!title || !author || !genre || !price) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
     if (!req.files?.pdf) {
       return res.status(400).json({ message: "PDF file is required" });
@@ -80,7 +84,7 @@ exports.createBook = async (req, res) => {
     console.log(`✅ Book created: ${newBook.title}`);
     res.status(201).json(newBook);
   } catch (error) {
-    console.error("Error in createBook:", error.message);
+    console.error("Error in createBook:", error);
     res.status(500).json({ message: "Error creating book" });
   }
 };
@@ -108,7 +112,7 @@ exports.deleteBook = async (req, res) => {
     await book.deleteOne();
     res.json({ message: `🗑 Book "${book.title}" deleted successfully` });
   } catch (error) {
-    console.error("Error deleting book:", error.message);
+    console.error("Error deleting book:", error);
     res.status(500).json({ message: "Server error while deleting book" });
   }
 };
