@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: fable-forest-backend
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: MONGO_URI
+        value: mongodb+srv://mernweb:mongodb69%40@cluster0.muuv9ve.mongodb.net/webmern?retryWrites=true&w=majority&appName=Cluster0
+      - key: JWT_SECRET
+        value: mylibraryappsupersecret123
+      - key: CLOUDINARY_CLOUD_NAME
+        value: dsbzpuktp
+      - key: CLOUDINARY_API_KEY
+        value: 912155788379687
+      - key: CLOUDINARY_API_SECRET
+        value: -VQmsWJFQu0votFCPF95YjrXRyM
