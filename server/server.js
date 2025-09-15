@@ -33,6 +33,12 @@ app.use('/api/admin/books', adminBookRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/read', bookReadRoutes);
 
+// 🛑 Global error handler
+app.use((err, req, res, next) => {
+  console.error('🔥 Unhandled error:', err);
+  res.status(500).json({ message: 'Internal Server Error', details: err.message });
+});
+
 // 🔗 MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI)
@@ -45,3 +51,4 @@ mongoose
   .catch((err) => {
     console.error('❌ Failed to connect to MongoDB:', err.message);
   });
+
