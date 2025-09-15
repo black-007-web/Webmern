@@ -9,7 +9,7 @@ const userRoutes = require('./routes/userRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const bookRoutes = require('./routes/userBooks');
 const bookReadRoutes = require('./routes/bookReadRoutes');
-const adminBookRoutes = require('./routes/adminBookRoutes');
+// const adminBookRoutes = require('./routes/adminBookRoutes'); // ❌ Removed to fix 505
 
 dotenv.config();
 
@@ -28,8 +28,8 @@ app.get('/', (req, res) => {
 // 📚 API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/user', userRoutes);
-app.use('/api/admin', adminRoutes);
-app.use('/api/admin/books', adminBookRoutes);
+app.use('/api/admin', adminRoutes); // Handles admin + book creation
+// app.use('/api/admin/books', adminBookRoutes); // ❌ Removed duplicate route
 app.use('/api/books', bookRoutes);
 app.use('/api/read', bookReadRoutes);
 
@@ -51,4 +51,3 @@ mongoose
   .catch((err) => {
     console.error('❌ Failed to connect to MongoDB:', err.message);
   });
-
