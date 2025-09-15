@@ -4,8 +4,6 @@ const Book = require('../models/Book');
 const User = require('../models/User');
 const { cloudinary } = require('../config/cloudinary');
 
-const BASE_URL = process.env.BASE_URL || 'https://api-fable-forest.onrender.com';
-
 // 📚 Get all books
 exports.getAllBooks = async (req, res) => {
   try {
@@ -50,14 +48,14 @@ exports.createBook = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    if (!req.files?.pdf) {
+    const pdfFile = req.files?.pdf?.[0];
+    const imageFile = req.files?.image?.[0] || null;
+
+    if (!pdfFile) {
       return res.status(400).json({ message: "PDF file is required" });
     }
 
-    const imageFile = req.files?.image?.[0] || null;
-    const pdfFile = req.files.pdf[0];
-
-    // Upload to Cloudinary
+    // Upload PDF to Cloudinary
     const pdfUpload = await cloudinary.uploader.upload(pdfFile.path, {
       resource_type: 'raw',
       folder: 'mern-library/pdfs',
@@ -83,9 +81,10 @@ exports.createBook = async (req, res) => {
     await newBook.save();
     console.log(`✅ Book created: ${newBook.title}`);
     res.status(201).json(newBook);
+
   } catch (error) {
     console.error("Error in createBook:", error);
-    res.status(500).json({ message: "Error creating book" });
+    res.status(500).json({ message: "Error creating book", error: error.message });
   }
 };
 
@@ -95,19 +94,7 @@ exports.deleteBook = async (req, res) => {
     const book = await Book.findById(req.params.bookId);
     if (!book) return res.status(404).json({ message: "Book not found" });
 
-    const imageFilename = book.image?.split('/').pop();
-    const pdfFilename = book.pdfUrl?.split('/').pop();
-
-    const imagePath = imageFilename
-      ? path.join(__dirname, '..', 'uploads/images', imageFilename)
-      : null;
-
-    const pdfPath = pdfFilename
-      ? path.join(__dirname, '..', 'uploads/pdfs', pdfFilename)
-      : null;
-
-    if (imagePath && fs.existsSync(imagePath)) fs.unlinkSync(imagePath);
-    if (pdfPath && fs.existsSync(pdfPath)) fs.unlinkSync(pdfPath);
+    // Optionally delete from Cloudinary if needed
 
     await book.deleteOne();
     res.json({ message: `🗑 Book "${book.title}" deleted successfully` });
