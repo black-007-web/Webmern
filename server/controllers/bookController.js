@@ -15,7 +15,7 @@ exports.getAllBooks = async (req, res) => {
   }
 };
 
-// 📖 Read a book (only if purchased)
+// 📖 Read a book (only if purchased) — MODIFIED: redirect to Cloudinary PDF
 exports.readBook = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
@@ -34,8 +34,8 @@ exports.readBook = async (req, res) => {
       return res.status(404).json({ message: "PDF URL not available" });
     }
 
-    // ✅ Simplified: just return Cloudinary PDF URL
-    res.json({ title: book.title, pdfUrl: book.pdfUrl });
+    // ✅ Redirect user straight to Cloudinary PDF
+    return res.redirect(book.pdfUrl);
   } catch (error) {
     console.error("Error in readBook:", error);
     res.status(500).json({ message: "Server error" });
