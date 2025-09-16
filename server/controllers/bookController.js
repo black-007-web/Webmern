@@ -1,7 +1,6 @@
-
 const Book = require("../models/Book");
 const User = require("../models/User");
-const cloudinary = require("../config/cloudinary"); // if you want optional cleanup
+const cloudinary = require("../config/cloudinary"); // Your Cloudinary config
 
 // 📚 Get all books
 exports.getAllBooks = async (req, res) => {
@@ -30,9 +29,10 @@ exports.readBook = async (req, res) => {
     if (!book) return res.status(404).json({ message: "Book not found" });
 
     if (!book.pdfUrl) {
-      return res.status(404).json({ message: "PDF URL not available" });
+      return res.status(404).json({ message: "PDF not available" });
     }
 
+    // Return the Cloudinary PDF URL
     res.json({ title: book.title, pdfUrl: book.pdfUrl });
   } catch (error) {
     console.error("Error in readBook:", error);
@@ -45,12 +45,12 @@ exports.createBook = async (req, res) => {
   try {
     const { title, author, genre, price } = req.body;
 
-    // ✅ Validate required fields
+    // Validate required fields
     if (!title || !author || !genre || !price) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // ✅ Handle file uploads (must match your route: upload.fields([...]))
+    // Handle file uploads
     const pdfFile = req.files && req.files.pdf ? req.files.pdf[0] : null;
     const imageFile = req.files && req.files.image ? req.files.image[0] : null;
 
@@ -58,14 +58,15 @@ exports.createBook = async (req, res) => {
       return res.status(400).json({ message: "PDF file is required" });
     }
 
-    // ✅ Extract URLs from Multer-Cloudinary
-    const pdfUrl =
-      pdfFile.secure_url || pdfFile.path || pdfFile.location || null;
-    const imageUrl =
-      imageFile?.secure_url || imageFile?.path || imageFile?.location || null;
+    // Upload PDF to Cloudinary (raw for PDF)
+    const pdfUpload = await cloudinary.uploader.upload(pdfFile.path, {
+      resource_type: "raw",
+    });
 
-    if (!pdfUrl) {
-      return res.status(500).json({ message: "PDF upload failed" });
+    // Upload image if exists
+    let imageUpload = null;
+    if (imageFile) {
+      imageUpload = await cloudinary.uploader.upload(imageFile.path);
     }
 
     const newBook = new Book({
@@ -73,8 +74,8 @@ exports.createBook = async (req, res) => {
       author,
       genre,
       price,
-      image: imageUrl,
-      pdfUrl,
+      pdfUrl: pdfUpload.secure_url,
+      image: imageUpload?.secure_url || null,
     });
 
     await newBook.save();
@@ -93,7 +94,7 @@ exports.deleteBook = async (req, res) => {
     const book = await Book.findById(req.params.bookId);
     if (!book) return res.status(404).json({ message: "Book not found" });
 
-    // Optional: clean up from Cloudinary if you store public_id in DB
+    // Optional: delete files from Cloudinary if you store public_ids
     // if (book.imagePublicId) await cloudinary.uploader.destroy(book.imagePublicId);
     // if (book.pdfPublicId) await cloudinary.uploader.destroy(book.pdfPublicId);
 
@@ -104,3 +105,4 @@ exports.deleteBook = async (req, res) => {
     res.status(500).json({ message: "Server error while deleting book" });
   }
 };
+
