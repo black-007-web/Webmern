@@ -1,7 +1,11 @@
+const path = require('path');
 const Admin = require('../models/admin');
 const User = require('../models/User');
-const { createBook: cloudinaryCreateBook } = require('./bookController');
+const Book = require('../models/Book');
 const generateToken = require('../utils/generateToken');
+
+// Delegate book creation to bookController
+const { createBook: cloudinaryCreateBook } = require('./bookController');
 
 // 🔐 Admin login
 exports.loginAdmin = async (req, res) => {
