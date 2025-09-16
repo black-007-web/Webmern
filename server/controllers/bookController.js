@@ -34,18 +34,8 @@ exports.readBook = async (req, res) => {
       return res.status(404).json({ message: "PDF URL not available" });
     }
 
-    // Check if pdfUrl is local or Cloudinary
-    if (book.pdfUrl.startsWith("http")) {
-      // Cloudinary / public URL
-      res.json({ title: book.title, pdfUrl: book.pdfUrl });
-    } else {
-      // Local storage
-      const filePath = path.resolve(book.pdfUrl);
-      if (!fs.existsSync(filePath)) {
-        return res.status(404).json({ message: "PDF file not found on server" });
-      }
-      res.sendFile(filePath);
-    }
+    // ✅ Simplified: just return Cloudinary PDF URL
+    res.json({ title: book.title, pdfUrl: book.pdfUrl });
   } catch (error) {
     console.error("Error in readBook:", error);
     res.status(500).json({ message: "Server error" });
@@ -66,26 +56,31 @@ exports.createBook = async (req, res) => {
 
     if (!pdfFile) return res.status(400).json({ message: "PDF file is required" });
 
-    // Determine PDF URL
+    // ✅ Upload PDF to Cloudinary as raw
     let pdfUrl;
-    if (pdfFile.secure_url) {
-      // Cloudinary
+    if (pdfFile.path) {
+      const uploadedPdf = await cloudinary.uploader.upload(pdfFile.path, {
+        resource_type: "raw",
+        folder: "books",
+      });
+      pdfUrl = uploadedPdf.secure_url;
+    } else if (pdfFile.secure_url) {
       pdfUrl = pdfFile.secure_url;
-    } else if (pdfFile.path) {
-      // Local storage
-      pdfUrl = pdfFile.path;
-    } else if (pdfFile.location) {
-      // S3 or other storage
-      pdfUrl = pdfFile.location;
     } else {
       return res.status(500).json({ message: "PDF upload failed" });
     }
 
+    // Optional image upload
     let imageUrl = null;
     if (imageFile) {
-      if (imageFile.secure_url) imageUrl = imageFile.secure_url;
-      else if (imageFile.path) imageUrl = imageFile.path;
-      else if (imageFile.location) imageUrl = imageFile.location;
+      if (imageFile.path) {
+        const uploadedImage = await cloudinary.uploader.upload(imageFile.path, {
+          folder: "books/images",
+        });
+        imageUrl = uploadedImage.secure_url;
+      } else if (imageFile.secure_url) {
+        imageUrl = imageFile.secure_url;
+      }
     }
 
     const newBook = new Book({
