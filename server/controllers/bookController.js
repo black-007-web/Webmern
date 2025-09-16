@@ -1,7 +1,7 @@
-
 const Book = require("../models/Book");
 const User = require("../models/User");
-const cloudinary = require("../config/cloudinary"); // if you want optional cleanup
+const axios = require("axios");
+const cloudinary = require("../config/cloudinary"); // optional cleanup
 
 // 📚 Get all books
 exports.getAllBooks = async (req, res) => {
@@ -30,10 +30,26 @@ exports.readBook = async (req, res) => {
     if (!book) return res.status(404).json({ message: "Book not found" });
 
     if (!book.pdfUrl) {
-      return res.status(404).json({ message: "PDF URL not available" });
+      return res.status(404).json({ message: "File URL not available" });
     }
 
-    res.json({ title: book.title, pdfUrl: book.pdfUrl });
+    // Fetch file content from Cloudinary (or any URL)
+    const response = await axios.get(book.pdfUrl, { responseType: "arraybuffer" });
+
+    // Determine content type (PDF, image, video, etc.)
+    const contentType = book.pdfUrl.endsWith(".pdf")
+      ? "application/pdf"
+      : book.pdfUrl.match(/\.(jpg|jpeg|png|gif)$/i)
+      ? `image/${book.pdfUrl.split(".").pop()}`
+      : book.pdfUrl.match(/\.(mp4|mov|webm)$/i)
+      ? `video/${book.pdfUrl.split(".").pop()}`
+      : "application/octet-stream";
+
+    res.set({
+      "Content-Type": contentType,
+      "Content-Disposition": `inline; filename="${book.title}"`,
+    });
+    res.send(Buffer.from(response.data, "binary"));
   } catch (error) {
     console.error("Error in readBook:", error);
     res.status(500).json({ message: "Server error" });
@@ -50,12 +66,12 @@ exports.createBook = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // ✅ Handle file uploads (must match your route: upload.fields([...]))
+    // ✅ Handle file uploads
     const pdfFile = req.files && req.files.pdf ? req.files.pdf[0] : null;
     const imageFile = req.files && req.files.image ? req.files.image[0] : null;
 
     if (!pdfFile) {
-      return res.status(400).json({ message: "PDF file is required" });
+      return res.status(400).json({ message: "File is required" });
     }
 
     // ✅ Extract URLs from Multer-Cloudinary
@@ -65,7 +81,7 @@ exports.createBook = async (req, res) => {
       imageFile?.secure_url || imageFile?.path || imageFile?.location || null;
 
     if (!pdfUrl) {
-      return res.status(500).json({ message: "PDF upload failed" });
+      return res.status(500).json({ message: "File upload failed" });
     }
 
     const newBook = new Book({
