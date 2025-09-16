@@ -1,46 +1,46 @@
-const mongoose = require('mongoose');
-const path = require('path');
-const fs = require('fs');
+const mongoose = require("mongoose");
 
 const bookSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: [true, 'Book title is required'],
+      required: [true, "Book title is required"],
       trim: true,
     },
     author: {
       type: String,
-      required: [true, 'Author is required'],
+      required: [true, "Author is required"],
       trim: true,
     },
     genre: {
       type: String,
-      required: [true, 'Genre is required'],
+      required: [true, "Genre is required"],
+      trim: true,
     },
     price: {
       type: Number,
-      required: [true, 'Price is required'],
+      required: [true, "Price is required"],
       min: 0,
     },
     image: {
       type: String,
-      required: true,
+      required: false, // ✅ optional to match your controller
       validate: {
         validator: function (v) {
-          return /^https?:\/\/.+\.(jpg|jpeg|png|webp|gif)$/.test(v);
+          if (!v) return true; // allow empty
+          return /^https?:\/\/.+/.test(v); // ✅ looser check, works for Cloudinary
         },
-        message: props => `${props.value} is not a valid image URL`,
+        message: (props) => `${props.value} is not a valid image URL`,
       },
     },
     pdfUrl: {
       type: String,
-      required: true,
+      required: [true, "PDF URL is required"],
       validate: {
         validator: function (v) {
-          return /^https?:\/\/.+\.pdf$/.test(v);
+          return /^https?:\/\/.+/.test(v); // ✅ accept any https URL
         },
-        message: props => `${props.value} is not a valid PDF URL`,
+        message: (props) => `${props.value} is not a valid PDF URL`,
       },
     },
   },
@@ -48,18 +48,17 @@ const bookSchema = new mongoose.Schema(
 );
 
 // 🔍 Virtuals for filename extraction
-bookSchema.virtual('pdfFilename').get(function () {
-  return this.pdfUrl?.split('/').pop();
+bookSchema.virtual("pdfFilename").get(function () {
+  return this.pdfUrl?.split("/").pop();
 });
 
-bookSchema.virtual('imageFilename').get(function () {
-  return this.image?.split('/').pop();
+bookSchema.virtual("imageFilename").get(function () {
+  return this.image?.split("/").pop();
 });
 
-// 🧪 Deprecated: Local file check (not used with Cloudinary)
+// 🧪 Deprecated: Local file check (always false for Cloudinary)
 bookSchema.methods.pdfExistsOnServer = function () {
-  return false; // Cloudinary files are not stored locally
+  return false;
 };
 
-module.exports = mongoose.model('Book', bookSchema);
-
+module.exports = mongoose.model("Book", bookSchema);
