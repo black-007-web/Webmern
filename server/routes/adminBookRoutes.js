@@ -1,20 +1,17 @@
 const express = require('express');
 const router = express.Router();
 const { adminProtect } = require('../middleware/adminMiddleware');
-const { createBook, deleteBook } = require('../controllers/bookController');
-const multer = require('multer');
-const { storage } = require('../config/cloudinary');
+const { getAllBooks, createBook, deleteBook } = require('../controllers/bookController');
+const { upload } = require('../middleware/uploadMiddleware'); // your updated upload middleware
 
-// Multer middleware with Cloudinary storage for image and pdf
-const upload = multer({ storage }).fields([
-  { name: 'image', maxCount: 1 },
-  { name: 'pdf', maxCount: 1 },
-]);
+// GET all books (admin only)
+router.get('/', adminProtect, getAllBooks);
 
-// Route to create a new book (admin only)
+// POST create a new book (admin only)
+// Uses Cloudinary upload middleware for PDF and image
 router.post('/', adminProtect, upload, createBook);
 
-// Route to delete a book by ID (admin only)
+// DELETE a book by ID (admin only)
 router.delete('/:bookId', adminProtect, deleteBook);
 
 module.exports = router;
