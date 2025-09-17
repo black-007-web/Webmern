@@ -22,43 +22,57 @@ const bookSchema = new mongoose.Schema(
       required: [true, "Price is required"],
       min: 0,
     },
+
+    // ✅ Cover image (Cloudinary URL optional)
     image: {
       type: String,
-      required: false, // ✅ optional to match your controller
+      required: false,
       validate: {
         validator: function (v) {
           if (!v) return true; // allow empty
-          return /^https?:\/\/.+/.test(v); // ✅ looser check, works for Cloudinary
+          return /^https?:\/\/.+/.test(v); // accept Cloudinary or any URL
         },
         message: (props) => `${props.value} is not a valid image URL`,
       },
     },
-    pdfUrl: {
+
+    // ✅ Flexible file storage
+    fileUrl: {
       type: String,
-      required: [true, "PDF URL is required"],
+      required: false, // Cloudinary or external URL
       validate: {
         validator: function (v) {
-          return /^https?:\/\/.+/.test(v); // ✅ accept any https URL
+          if (!v) return true;
+          return /^https?:\/\/.+/.test(v);
         },
-        message: (props) => `${props.value} is not a valid PDF URL`,
+        message: (props) => `${props.value} is not a valid file URL`,
       },
+    },
+    fileContent: {
+      type: Buffer, // raw binary (PDF, video, audio, etc.)
+      required: false,
+    },
+    fileType: {
+      type: String, // MIME type e.g. application/pdf, video/mp4
+      required: false,
     },
   },
   { timestamps: true }
 );
 
-// 🔍 Virtuals for filename extraction
-bookSchema.virtual("pdfFilename").get(function () {
-  return this.pdfUrl?.split("/").pop();
+// 🔍 Virtuals for filename extraction (for convenience)
+bookSchema.virtual("fileName").get(function () {
+  if (this.fileUrl) return this.fileUrl.split("/").pop();
+  return this.title.replace(/\s+/g, "_"); // fallback to title
 });
 
 bookSchema.virtual("imageFilename").get(function () {
   return this.image?.split("/").pop();
 });
 
-// 🧪 Deprecated: Local file check (always false for Cloudinary)
-bookSchema.methods.pdfExistsOnServer = function () {
-  return false;
+// 🧪 Method: check if stored as raw content
+bookSchema.methods.hasRawContent = function () {
+  return !!this.fileContent;
 };
 
 module.exports = mongoose.model("Book", bookSchema);
