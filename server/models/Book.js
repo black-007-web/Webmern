@@ -22,57 +22,43 @@ const bookSchema = new mongoose.Schema(
       required: [true, "Price is required"],
       min: 0,
     },
-
-    // ✅ Cover image (Cloudinary URL optional)
     image: {
       type: String,
-      required: false,
+      required: false, // ✅ optional to match your controller
       validate: {
         validator: function (v) {
           if (!v) return true; // allow empty
-          return /^https?:\/\/.+/.test(v); // accept Cloudinary or any URL
+          return /^https?:\/\/.+/.test(v); // ✅ looser check, works for Cloudinary
         },
         message: (props) => `${props.value} is not a valid image URL`,
       },
     },
-
-    // ✅ Flexible file storage
-    fileUrl: {
+    pdfUrl: {
       type: String,
-      required: false, // Cloudinary or external URL
+      required: [true, "PDF URL is required"],
       validate: {
         validator: function (v) {
-          if (!v) return true;
-          return /^https?:\/\/.+/.test(v);
+          return /^https?:\/\/.+/.test(v); // ✅ accept any https URL
         },
-        message: (props) => `${props.value} is not a valid file URL`,
+        message: (props) => `${props.value} is not a valid PDF URL`,
       },
-    },
-    fileContent: {
-      type: Buffer, // raw binary (PDF, video, audio, etc.)
-      required: false,
-    },
-    fileType: {
-      type: String, // MIME type e.g. application/pdf, video/mp4
-      required: false,
     },
   },
   { timestamps: true }
 );
 
-// 🔍 Virtuals for filename extraction (for convenience)
-bookSchema.virtual("fileName").get(function () {
-  if (this.fileUrl) return this.fileUrl.split("/").pop();
-  return this.title.replace(/\s+/g, "_"); // fallback to title
+// 🔍 Virtuals for filename extraction
+bookSchema.virtual("pdfFilename").get(function () {
+  return this.pdfUrl?.split("/").pop();
 });
 
 bookSchema.virtual("imageFilename").get(function () {
   return this.image?.split("/").pop();
 });
 
-// 🧪 Method: check if stored as raw content
-bookSchema.methods.hasRawContent = function () {
-  return !!this.fileContent;
+// 🧪 Deprecated: Local file check (always false for Cloudinary)
+bookSchema.methods.pdfExistsOnServer = function () {
+  return false;
 };
 
 module.exports = mongoose.model("Book", bookSchema);
