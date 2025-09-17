@@ -1,6 +1,5 @@
 const Book = require("../models/Book");
 const User = require("../models/User");
-const axios = require("axios");
 const cloudinary = require("../config/cloudinary"); // optional cleanup
 
 // 📚 Get all books
@@ -29,27 +28,21 @@ exports.readBook = async (req, res) => {
     const book = await Book.findById(bookId);
     if (!book) return res.status(404).json({ message: "Book not found" });
 
-    if (!book.pdfUrl) {
-      return res.status(404).json({ message: "File URL not available" });
+    // ✅ If stored as raw content, return the bytes directly
+    if (book.fileContent) {
+      res.set({
+        "Content-Type": book.fileType || "application/octet-stream",
+        "Content-Disposition": `inline; filename="${book.title}"`,
+      });
+      return res.send(book.fileContent);
     }
 
-    // Fetch file content from Cloudinary (or any URL)
-    const response = await axios.get(book.pdfUrl, { responseType: "arraybuffer" });
+    // ✅ Otherwise return Cloudinary/S3 URL
+    if (book.fileUrl) {
+      return res.json({ title: book.title, fileUrl: book.fileUrl });
+    }
 
-    // Determine content type (PDF, image, video, etc.)
-    const contentType = book.pdfUrl.endsWith(".pdf")
-      ? "application/pdf"
-      : book.pdfUrl.match(/\.(jpg|jpeg|png|gif)$/i)
-      ? `image/${book.pdfUrl.split(".").pop()}`
-      : book.pdfUrl.match(/\.(mp4|mov|webm)$/i)
-      ? `video/${book.pdfUrl.split(".").pop()}`
-      : "application/octet-stream";
-
-    res.set({
-      "Content-Type": contentType,
-      "Content-Disposition": `inline; filename="${book.title}"`,
-    });
-    res.send(Buffer.from(response.data, "binary"));
+    res.status(404).json({ message: "No file available" });
   } catch (error) {
     console.error("Error in readBook:", error);
     res.status(500).json({ message: "Server error" });
@@ -66,21 +59,30 @@ exports.createBook = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // ✅ Handle file uploads
-    const pdfFile = req.files && req.files.pdf ? req.files.pdf[0] : null;
+    // ✅ Handle file uploads (must match your route: upload.fields([...]))
+    const uploadedFile = req.files && req.files.pdf ? req.files.pdf[0] : null;
     const imageFile = req.files && req.files.image ? req.files.image[0] : null;
 
-    if (!pdfFile) {
+    if (!uploadedFile) {
       return res.status(400).json({ message: "File is required" });
     }
 
-    // ✅ Extract URLs from Multer-Cloudinary
-    const pdfUrl =
-      pdfFile.secure_url || pdfFile.path || pdfFile.location || null;
-    const imageUrl =
-      imageFile?.secure_url || imageFile?.path || imageFile?.location || null;
+    let fileUrl = null;
+    let fileContent = null;
+    let fileType = uploadedFile.mimetype;
 
-    if (!pdfUrl) {
+    // ✅ If Cloudinary (or S3) gives URL
+    if (uploadedFile.secure_url || uploadedFile.path || uploadedFile.location) {
+      fileUrl =
+        uploadedFile.secure_url ||
+        uploadedFile.path ||
+        uploadedFile.location;
+    } else if (uploadedFile.buffer) {
+      // ✅ If Multer provides raw Buffer
+      fileContent = uploadedFile.buffer;
+    }
+
+    if (!fileUrl && !fileContent) {
       return res.status(500).json({ message: "File upload failed" });
     }
 
@@ -89,8 +91,10 @@ exports.createBook = async (req, res) => {
       author,
       genre,
       price,
-      image: imageUrl,
-      pdfUrl,
+      image: imageFile?.secure_url || imageFile?.path || null,
+      fileUrl,
+      fileContent,
+      fileType,
     });
 
     await newBook.save();
@@ -111,7 +115,7 @@ exports.deleteBook = async (req, res) => {
 
     // Optional: clean up from Cloudinary if you store public_id in DB
     // if (book.imagePublicId) await cloudinary.uploader.destroy(book.imagePublicId);
-    // if (book.pdfPublicId) await cloudinary.uploader.destroy(book.pdfPublicId);
+    // if (book.filePublicId) await cloudinary.uploader.destroy(book.filePublicId);
 
     await book.deleteOne();
     res.json({ message: `🗑 Book "${book.title}" deleted successfully` });
