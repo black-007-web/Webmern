@@ -1,7 +1,7 @@
 const axios = require('axios');
 const Book = require("../models/Book");
 const User = require("../models/User");
-const cloudinary = require("../config/cloudinary"); // Cloudinary v2 instance
+const cloudinary = require("../config/cloudinary").cloudinary; // use your configured cloudinary instance
 
 // 📚 Get all books
 exports.getAllBooks = async (req, res) => {
@@ -25,7 +25,7 @@ exports.readBook = async (req, res) => {
     const book = await Book.findById(bookId);
     if (!book) return res.status(404).json({ message: "Book not found" });
 
-    if (!book.pdfPublicId) { // assuming you saved public_id when creating book
+    if (!book.pdfPublicId) {
       return res.status(404).json({ message: "PDF Public ID not available" });
     }
 
@@ -33,15 +33,14 @@ exports.readBook = async (req, res) => {
     const signedUrl = cloudinary.v2.url(book.pdfPublicId, {
       sign_url: true,
       expires_at: Math.floor(Date.now() / 1000) + 3600,
-      resource_type: 'raw' // or 'video' if using video type
+      resource_type: 'raw',
     });
 
-    // Stream PDF using axios
+    // Stream PDF from signed URL
     const response = await axios.get(signedUrl, { responseType: 'stream' });
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `inline; filename="${book.title}.pdf"`);
     response.data.pipe(res);
-
   } catch (error) {
     console.error("Error in readBook:", error);
     res.status(500).json({ message: "Server error" });
@@ -57,13 +56,14 @@ exports.createBook = async (req, res) => {
     }
     const pdfFile = req.files && req.files.pdf ? req.files.pdf[0] : null;
     const imageFile = req.files && req.files.image ? req.files.image[0] : null;
+
     if (!pdfFile) {
       return res.status(400).json({ message: "PDF file is required" });
     }
 
     const pdfUrl = pdfFile.secure_url || pdfFile.path || pdfFile.location || null;
+    const pdfPublicId = pdfFile.public_id || null;
     const imageUrl = imageFile?.secure_url || imageFile?.path || imageFile?.location || null;
-    const pdfPublicId = pdfFile.public_id || null; // save public_id for signed URLs
 
     if (!pdfUrl || !pdfPublicId) {
       return res.status(500).json({ message: "PDF upload failed or public ID missing" });
@@ -82,20 +82,19 @@ exports.createBook = async (req, res) => {
     await newBook.save();
     console.log(`✅ Book created: ${newBook.title}`);
     res.status(201).json(newBook);
-
   } catch (error) {
     console.error("Error in createBook:", error);
     res.status(500).json({ message: "Server error while creating book" });
   }
 };
 
-// 🗑 Delete a book (with optional Cloudinary cleanup)
+// 🗑 Delete a book (optional Cloudinary cleanup)
 exports.deleteBook = async (req, res) => {
   try {
     const book = await Book.findById(req.params.bookId);
     if (!book) return res.status(404).json({ message: "Book not found" });
 
-    // Optional cleanup
+    // Optional cleanup from Cloudinary if you save public ids for image/pdf
     // if (book.imagePublicId) await cloudinary.v2.uploader.destroy(book.imagePublicId);
     // if (book.pdfPublicId) await cloudinary.v2.uploader.destroy(book.pdfPublicId);
 
@@ -106,3 +105,4 @@ exports.deleteBook = async (req, res) => {
     res.status(500).json({ message: "Server error while deleting book" });
   }
 };
+
