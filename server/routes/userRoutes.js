@@ -7,18 +7,27 @@ const {
   getUserProfile,
 } = require('../controllers/userController');
 
+const chatController = require('../controllers/chatController');
+
 const router = express.Router();
 
-// ✅ NEW: Get user profile
+// ✅ User profile
 router.get('/profile', protect, getUserProfile);
 
-// Buy a book (POST /api/user/buy)
+// Buy a book
 router.post('/buy', protect, buyBook);
 
-// Get all purchased books for the logged-in user (GET /api/user/books)
+// Get all purchased books
 router.get('/books', protect, getPurchasedBooks);
 
-// Delete a purchased book (DELETE /api/user/books/:bookId)
+// Delete a purchased book
 router.delete('/books/:bookId', protect, deletePurchasedBook);
 
+// 🔹 NEW: Chat routes for users
+router.post('/chat/send', protect, chatController.sendMessage);
+router.get('/chat/messages/:userId', protect, chatController.getMessages);
+router.get('/chat/contacts', protect, chatController.getUserContacts);
+router.post('/chat/request-approval', protect, chatController.requestChatApproval);
+
 module.exports = router;
+
