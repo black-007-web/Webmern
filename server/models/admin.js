@@ -34,5 +34,6 @@ adminSchema.pre('save', async function (next) {
   next();
 });
 
-const Admin = mongoose.model('Admin', adminSchema);
-module.exports = Admin;
+// ✅ Fix OverwriteModelError
+module.exports = mongoose.models.Admin || mongoose.model('Admin', adminSchema);
+
