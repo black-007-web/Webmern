@@ -1,7 +1,7 @@
 // Backend/middleware/socketAuth.js - Socket authentication
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const Admin = require('../models/Admin');
+const Admin = require('../models/admin');
 
 const socketAuth = async (socket, next) => {
   try {
