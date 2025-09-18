@@ -44,7 +44,7 @@ router.post(
   createBook
 );
 
-// Delete a book by ID
+// Delete a book by ID (protected)
 router.delete('/books/:bookId', adminProtect, async (req, res, next) => {
   try {
     // Delegate to bookController deleteBook method
@@ -55,4 +55,15 @@ router.delete('/books/:bookId', adminProtect, async (req, res, next) => {
   }
 });
 
+// 🔹 NEW: Admin chat routes integration
+const chatController = require('../controllers/chatController');
+
+router.get('/chat/users', adminProtect, chatController.getAdminUsers);
+router.post('/chat/announcement', adminProtect, chatController.sendAnnouncement);
+router.post('/chat/kick', adminProtect, chatController.kickUser);
+router.delete('/chat/message/:messageId', adminProtect, chatController.deleteMessage);
+router.delete('/chat/clear/:userId', adminProtect, chatController.clearChatHistory);
+router.patch('/chat/approve/:conversationId', adminProtect, chatController.approveChatRequest);
+
 module.exports = router;
+
