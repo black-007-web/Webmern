@@ -1,7 +1,8 @@
 const path = require('path');
-const Admin = require('../models/admin');
+const Admin = require('../models/Admin');
 const User = require('../models/User');
 const Book = require('../models/Book');
+const Conversation = require('../models/Conversation'); // Added for chat integration
 const generateToken = require('../utils/generateToken');
 
 // Delegate book creation to bookController
@@ -35,7 +36,17 @@ exports.loginAdmin = async (req, res) => {
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.find({}).select('-password');
-    res.json(users);
+
+    // Include chat-related info: active admin-user conversations
+    const usersWithChatInfo = await Promise.all(users.map(async user => {
+      const conversation = await Conversation.getAdminUserConversation(user._id, req.admin._id);
+      return {
+        ...user.toObject(),
+        hasActiveChat: !!conversation
+      };
+    }));
+
+    res.json(usersWithChatInfo);
   } catch (error) {
     console.error('Get users error:', error.message);
     res.status(500).json({ message: 'Server error' });
@@ -49,6 +60,13 @@ exports.deleteUser = async (req, res) => {
     if (!deletedUser) {
       return res.status(404).json({ message: 'User not found' });
     }
+
+    // Also archive or remove any conversations with this user
+    await Conversation.updateMany(
+      { 'participants.user': req.params.id },
+      { isArchived: true, archivedAt: new Date(), archivedBy: req.admin._id, archivedByModel: 'Admin' }
+    );
+
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
     console.error('Delete user error:', error.message);
@@ -65,3 +83,4 @@ exports.createBook = async (req, res) => {
     res.status(500).json({ message: "Server error in admin createBook" });
   }
 };
+
