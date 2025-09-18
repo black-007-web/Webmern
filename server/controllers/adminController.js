@@ -1,5 +1,5 @@
 const path = require('path');
-const Admin = require('../models/Admin');
+const Admin = require('../models/admin');
 const User = require('../models/User');
 const Book = require('../models/Book');
 const Conversation = require('../models/Conversation'); // Added for chat integration
