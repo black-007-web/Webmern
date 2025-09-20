@@ -17,18 +17,24 @@ const {
 const { protect } = require('../middleware/authMiddleware');
 const { adminProtect } = require('../middleware/adminMiddleware');
 
+// =====================
 // User routes
-router.post('/send', protect, sendMessage);
-router.get('/messages/:userId', protect, getMessages);
-router.get('/user/contacts', protect, getUserContacts);
-router.post('/request-approval', protect, requestChatApproval);
+// =====================
+router.post('/send', protect, sendMessage); // send message (user)
+router.get('/messages/:userId', protect, getMessages); // get messages (user)
+router.get('/user/contacts', protect, getUserContacts); // get user contacts
+router.post('/request-approval', protect, requestChatApproval); // request chat approval
 
+// =====================
 // Admin routes
-router.get('/admin/users', adminProtect, getAdminUsers);
-router.post('/admin/announcement', adminProtect, sendAnnouncement);
-router.post('/admin/kick', adminProtect, kickUser);
-router.delete('/admin/message/:messageId', adminProtect, deleteMessage);
-router.delete('/admin/clear/:userId', adminProtect, clearChatHistory);
-router.patch('/admin/approve/:conversationId', adminProtect, approveChatRequest);
+// =====================
+router.post('/admin/send', adminProtect, sendMessage);           // send message (admin)
+router.get('/admin/messages/:userId', adminProtect, getMessages); // get messages (admin)
+router.get('/admin/users', adminProtect, getAdminUsers);         // list users
+router.post('/admin/announcement', adminProtect, sendAnnouncement); // broadcast announcement
+router.post('/admin/kick', adminProtect, kickUser);              // kick a user
+router.delete('/admin/message/:messageId', adminProtect, deleteMessage); // delete a message
+router.delete('/admin/clear/:userId', adminProtect, clearChatHistory);   // clear chat history
+router.patch('/admin/approve/:conversationId', adminProtect, approveChatRequest); // approve chat request
 
 module.exports = router;
